@@ -1,0 +1,90 @@
+﻿@using Ludo.ViewModels
+@model Ludo.ViewModels.EditClient
+
+
+@{
+    ViewData["Title"] = "ثبت نام مشتری جدید";
+}
+
+<div class="container">
+    <div class="form-signin">
+        <h1 class="h3 mb-3 fw-normal text-center">@ViewData["Title"]</h1>
+        <div class="btn-group-custom">
+            <a href="@Url.Action("index", "clients")" class="btn btn-info">
+                <i class="bi bi-plus-circle"></i> فهرست مشتریان
+            </a>
+            @if (Model.Id > 0)
+            {
+                <a href="@Url.Action("new", "clients", new { id = "" })" class="btn btn-info">
+                    <i class="bi bi-plus-circle"></i> مشتری جدید
+                </a>
+            }
+        </div>
+
+        @Html.Partial("_Result")
+
+        @using (Html.BeginForm("new", "clients", FormMethod.Post, null))
+        {
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+            @Html.HiddenFor(x => x.Id)
+            <div class="form-floating mb-3">
+                @Html.EditorFor(model => model.Firstname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.LabelFor(model => model.Firstname)
+                <span asp-validation-for="Firstname" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                @Html.EditorFor(model => model.Lastname, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.LabelFor(model => model.Lastname)
+                <span asp-validation-for="Lastname" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                @Html.EditorFor(model => model.Mobile, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.LabelFor(model => model.Mobile)
+                <span asp-validation-for="Mobile" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.LabelFor(model => model.Email)
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <label class="form-label">جنسیت</label>
+            <div class="form-check-inline">
+                @Html.RadioButtonFor(m => m.Gender, Gender.Male,
+                new { @class = "form-check-input", id = "male" })
+            <label class="form-check-label" for="male">مرد</label>
+            <div class="form-check-inline">
+                @Html.RadioButtonFor(m => m.Gender, Gender.Female,
+                                new { @class = "form-check-input", id = "female" })
+                <label class="form-check-label" for="female">زن</label>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary" type="submit">ذخیره</button>
+                @if(Model.Id > 0)
+                {
+                    <a class="btn btn-danger" onclick="confirmDelete('@Model.Id')" >
+                        <i class="bi bi-trash"></i> حذف
+                    </a>
+                }
+        </div>
+                }
+
+        <p class="mt-4 mb-3 text-body-secondary text-center">&copy; ۱۴۰۳</p>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function confirmDelete(userId) {
+            if (confirm('آیا از حذف این مشتری مطمئن هستید؟')) {
+
+                window.location.href = '@Url.Action("delete", "clients")?id=' + userId;
+            }
+        }
+    </script>
+}

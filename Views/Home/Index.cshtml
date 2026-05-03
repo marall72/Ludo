@@ -1,0 +1,44 @@
+﻿@model Ludo.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "خانه";
+    var user = Context.Items["User"] as User;
+}
+
+<div class="text-center">
+    <h3>خوش آمدید</h3>
+</div>
+@if (user == null)
+{
+    @using (Html.BeginForm("login", "home", FormMethod.Post, null))
+    {
+        <div class="form-floating mb-3">
+            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.LabelFor(model => model.Username)
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating mb-3">
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", Type = "password" } })
+            @Html.LabelFor(model => model.Password)
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button class="btn btn-primary" type="submit">ورود</button>
+    }
+}
+
+@if (user != null)
+{
+    @Html.Partial("_Reservations", Model.Reservations)
+}
+
+@section Scripts {
+    <script>
+
+        function confirmDelete(userId) {
+            if (confirm('آیا از حذف این رزرو مطمئن هستید؟')) {
+
+                window.location.href = '@Url.Action("delete", "reservations")?id=' + userId;
+            }
+        }
+    </script>
+}

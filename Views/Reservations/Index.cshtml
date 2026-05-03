@@ -1,0 +1,19 @@
+﻿@model Ludo.ViewModels.ReservationListViewModel
+@using Ludo.Models
+
+@{
+    ViewData["Title"] = "فهرست رزروها";
+}
+
+@Html.Partial("_Reservations", Model)
+
+@section Scripts {
+    <script>
+        function confirmDelete(userId) {
+            if (confirm('آیا از حذف این رزرو مطمئن هستید؟')) {
+
+                window.location.href = '@Url.Action("delete", "reservations")?id=' + userId;
+            }
+        }
+    </script>
+}

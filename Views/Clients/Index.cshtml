@@ -1,0 +1,88 @@
+﻿@model Ludo.ViewModels.ClientListViewModel
+@using Ludo.Models
+
+@{
+    ViewData["Title"] = "فهرست مشتریان";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">فهرست مشتریان</h1>
+    @Html.Partial("_Result")
+    <div class="card" style="margin-bottom: 10px;">
+        <div class="card-header">
+            جستجو
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("index", "clients", HttpMethod.Post))
+            {
+                <div class="form-floating mb-3">
+                    @Html.EditorFor(model => model.SearchText, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.LabelFor(model => model.SearchText)
+                </div>
+
+                <button class="btn btn-dark" type="submit">جستجو</button>
+            }
+        </div>
+    </div>
+
+
+
+    <div class="mb-3">
+        <a href="@Url.Action("new", "clients")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> افزودن مشتری جدید
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>نام</th>
+                    <th>موبایل</th>
+                    <th>ایمیل</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Clients != null && Model.Clients.Any())
+                {
+                    @foreach (var user in Model.Clients)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Firstname @user.Lastname</td>
+                            <td>@user.Mobile</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <a href="@Url.Action("new", "clients", new { id = user.Id })" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> ویرایش
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('@user.Id')">
+                                    <i class="bi bi-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">هیچ مشتری یافت نشد.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(userId) {
+            if (confirm('آیا از حذف این مشتری مطمئن هستید؟')) {
+
+                window.location.href = '@Url.Action("delete", "clients")?id=' + userId;
+            }
+        }
+    </script>
+}

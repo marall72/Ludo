@@ -1,0 +1,76 @@
+﻿@model Ludo.ViewModels.StationListViewModel
+@using Ludo.Models
+
+@{
+   ViewData["Title"] = "فهرست کاربران";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">فهرست سیستم ها</h1>
+
+    @Html.Partial("_Result")
+    <div class="mb-3">
+        <a href="@Url.Action("new", "stations")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> افزودن سیستم جدید
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>نام</th>
+                    <th>نوع</th>
+                    <th>سطح</th>
+                    <th>تعداد کاربر</th>
+                    <th>بازی ها</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Stations != null && Model.Stations.Any())
+                {
+                    @foreach (var user in Model.Stations)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Title</td>
+                            <td>@user.StationType</td>
+                            <td>@user.StationLevel</td>
+                            <td>@user.PlayerCount</td>
+                            <td>@string.Join(" | ", user.StationGames.Select(x=> x.Game.Title))</td>
+                            <td>@(user.IsActive ? "فعال" : "غیرفعال")</td>
+                            <td>
+                                <a href="@Url.Action("new", "stations", new { id = user.Id })" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> ویرایش
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('@user.Id')">
+                                    <i class="bi bi-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">هیچ سیستمی یافت نشد.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(userId) {
+            if (confirm('آیا از حذف این سیستم مطمئن هستید؟')) {
+               
+                window.location.href = '@Url.Action("delete", "stations")?id=' + userId;
+            }
+        }
+    </script>
+}

@@ -1,0 +1,86 @@
+﻿@model Ludo.ViewModels.GameListViewModel
+@using Ludo.Models
+
+@{
+    ViewData["Title"] = "فهرست بازی ها";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">فهرست بازی ها</h1>
+    @Html.Partial("_Result")
+    <div class="card" style="margin-bottom: 10px;">
+        <div class="card-header">
+            جستجو
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("index", "games", HttpMethod.Post))
+            {
+                <div class="form-floating mb-3">
+                    @Html.EditorFor(model => model.SearchText, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.LabelFor(model => model.SearchText)
+                </div>
+
+                <button class="btn btn-dark" type="submit">جستجو</button>
+            }
+        </div>
+    </div>
+
+
+
+    <div class="mb-3">
+        <a href="@Url.Action("new", "games")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> افزودن بازی جدید
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>نام</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Games != null && Model.Games.Any())
+                {
+                    @foreach (var user in Model.Games)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td class="ltr">@user.Title</td>
+                            <td>@(user.IsActive ? "فعال" : "غیرفعال")</td>
+                            <td>
+                                <a href="@Url.Action("new", "games", new { id = user.Id })" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> ویرایش
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('@user.Id')">
+                                    <i class="bi bi-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center">هیچ بازی یافت نشد.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(gameId) {
+            if (confirm('آیا از حذف این بازی مطمئن هستید؟')) {
+
+                window.location.href = '@Url.Action("delete", "games")?id=' + gameId;
+            }
+        }
+    </script>
+}

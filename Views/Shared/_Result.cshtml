@@ -1,0 +1,13 @@
+﻿@if (ViewBag.Error != null)
+{
+    <div class="text-danger mb-3">
+        @ViewBag.Error
+    </div>
+}
+
+@if (@ViewBag.Result != null)
+{
+    <div class="alert alert-success alert-dismissible">
+        @ViewBag.Result
+    </div>
+}
