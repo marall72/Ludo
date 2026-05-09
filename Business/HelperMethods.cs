@@ -13,9 +13,16 @@ namespace Ludo.Business
             int month = int.Parse(dateParts[1]);
             int day = int.Parse(dateParts[2]);
 
-            var timeParts = time.Split(":");
-            var hour = Convert.ToInt32(timeParts[0]);
-            var minute = Convert.ToInt32(timeParts[1]);
+            int hour = 0;
+            int minute = 0;
+
+            if (!string.IsNullOrEmpty(time))
+            {
+                var timeParts = time.Split(":");
+                hour = Convert.ToInt32(timeParts[0]);
+                minute = Convert.ToInt32(timeParts[1]);
+            }
+            
             PersianCalendar pc = new PersianCalendar();
             DateTime gregorianDate = pc.ToDateTime(year, month, day, hour, minute, 0, 0);
 

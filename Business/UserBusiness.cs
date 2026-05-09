@@ -4,6 +4,7 @@ using Ludo.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Ludo.Business
 {
@@ -14,8 +15,29 @@ namespace Ludo.Business
             
         }
 
-        public EditUser Add(EditUser model, int currentUserId)
+        public EditUser Add(EditUser model, int currentUserId, out bool emailTaken, out bool usernameTaken, out bool mobileTaken)
         {
+            emailTaken = usernameTaken = mobileTaken = false;
+            var takenUser = GetByEmail(model.Email);
+            if (takenUser != null) {
+                emailTaken = true;
+                return model;
+            }
+
+            takenUser = GetByUsername(model.Username);
+            if (takenUser != null)
+            {
+                usernameTaken = true;
+                return model;
+            }
+
+            takenUser = GetByMobile(model.Mobile);
+            if (takenUser != null)
+            {
+                mobileTaken = true;
+                return model;
+            }
+
             var user = new User
             {
                 CreateDate = DateTime.Now,
@@ -38,7 +60,8 @@ namespace Ludo.Business
                 DateTime = DateTime.Now,
                 Description = JsonSerializer.Serialize(user, new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.AddUser,
                 UserId = currentUserId
@@ -47,11 +70,12 @@ namespace Ludo.Business
             return model;
         }
 
-        public User Update(EditUser model, int currentUserId, out bool emailTaken, out bool usernameTaken)
+        public User Update(EditUser model, int currentUserId, out bool emailTaken, out bool usernameTaken, out bool mobileTaken)
         {
             var existingUser = GetById(model.Id);
             emailTaken = false;
             usernameTaken = false;
+            mobileTaken = false;
 
             if (existingUser != null)
             {
@@ -75,6 +99,16 @@ namespace Ludo.Business
                     }
                 }
 
+                if (existingUser.Mobile != model.Mobile)
+                {
+                    var takenUser = GetByMobile(model.Mobile);
+                    if (takenUser != null && takenUser.Id != existingUser.Id)
+                    {
+                        mobileTaken = true;
+                        return existingUser;
+                    }
+                }
+
                 existingUser.Email = model.Email;
                 existingUser.Username = model.Username;
                 existingUser.Mobile = model.Mobile;
@@ -93,7 +127,8 @@ namespace Ludo.Business
                 DateTime = DateTime.Now,
                 Description = JsonSerializer.Serialize(existingUser, new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.EditUser,
                 UserId = currentUserId
@@ -110,6 +145,11 @@ namespace Ludo.Business
         public User GetByEmail(string email)
         {
             return dbContext.Users.FirstOrDefault(x => x.Email == email);
+        }
+
+        public User GetByMobile(string mobile)
+        {
+            return dbContext.Users.FirstOrDefault(x => x.Mobile == mobile);
         }
 
         public User GetById(int id)
@@ -145,7 +185,8 @@ namespace Ludo.Business
                 DateTime = DateTime.Now,
                 Description = JsonSerializer.Serialize(user, new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.AddUser,
                 UserId = currentUserId

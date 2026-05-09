@@ -1,0 +1,89 @@
+﻿@using Ludo.ViewModels
+@model Ludo.ViewModels.VisitReportListViewModel
+
+
+@{
+    ViewData["Title"] = "گزارش تعداد دفعات مراجعه مشتری";
+}
+
+<div class="container mt-4">
+    <h1 class="h3 mb-3 fw-normal text-center">@ViewData["Title"]</h1>
+
+    <div class="card">
+        <div class="card-header">جستجو</div>
+        <div class="card-body">
+            @using (Html.BeginForm("VisitReport", "reports", FormMethod.Post, null))
+            {
+                <div class="form-floating mb-3 row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            @Html.DropDownListFor(model => model.ClientId, Model.Clients, new { @class = "form-select select2 rtl " })
+                            @Html.LabelFor(model => model.ClientId)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating mb-3 row">
+                    <div class="col-md-6" style="margin-left: 0; padding-left: 0;">
+                        <div class="col-md-12">
+                            @Html.EditorFor(m => m.FromDate, new { htmlAttributes = new { @class = "form-control persianDatePicker" } })
+                            @Html.LabelFor(model => model.FromDate)
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="margin-right: 0px;margin-left: 0; padding-left: 0;">
+                        <div class="col-md-12">
+                            @Html.EditorFor(model => model.ToDate, new { htmlAttributes = new { @class = "form-control persianDatePicker" } })
+                            @Html.LabelFor(model => model.ToDate)
+
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="btn btn-primary" type="submit">جستجو</button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>نام</th>
+                    <th>تعداد دفعه مراجعه</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items != null && Model.Items.Any())
+                {
+                    @foreach (var client in Model.Items)
+                    {
+                        <tr>
+                            <td>@client.ClientId</td>
+                            <td>@client.ClientName</td>
+                            <td style="width: 154px;text-align: center;">
+                                @client.VisitCount
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">هیچ مراجعی یافت نشد.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <p class="mt-4 mb-3 text-body-secondary text-center">&copy; ۱۴۰۳</p>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

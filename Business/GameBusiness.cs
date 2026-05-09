@@ -2,6 +2,7 @@
 using Ludo.Models;
 using Ludo.ViewModels;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Ludo.Business
 {
@@ -43,7 +44,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(game,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.AddGame,
                 UserId = currentUserId
@@ -83,7 +85,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(existingGame,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.EditGame,
                 UserId = currentUserId
@@ -125,7 +128,10 @@ namespace Ludo.Business
             logBusiness.Add(new Log
             {
                 DateTime = DateTime.Now,
-                Description = JsonSerializer.Serialize(game, new JsonSerializerOptions { MaxDepth = 2 }),
+                Description = JsonSerializer.Serialize(game, new JsonSerializerOptions {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                }),
                 LogType = LogType.DeleteGame,
                 UserId = currentUserId
             });

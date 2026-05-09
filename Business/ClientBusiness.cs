@@ -3,6 +3,7 @@ using Ludo.Models;
 using Ludo.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Ludo.Business
 {
@@ -38,7 +39,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(client,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.AddClient,
                 UserId = currentUserId
@@ -79,7 +81,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(existingClient,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.EditClient,
                 UserId = currentUserId
@@ -126,7 +129,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(client,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.DeleteGame,
                 UserId = currentUserId

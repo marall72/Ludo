@@ -17,7 +17,7 @@ namespace Ludo.ViewModels
             var nowPlus = DateTime.Now.AddHours(1);
             FromTime = now.ToString("HH:mm");
             ToTime = now.AddHours(1).ToString("HH:mm");
-            //todo: if to time is passed AM then date should be added 1 days
+            //todo: if to time is passed 12 AM then date should be added 1 days
         }
 
         public int Id { get; set; }

@@ -65,6 +65,14 @@
                                         <li><a class="dropdown-item" href="/games">فهرست همه بازی ها</a></li>
                                     </ul>
                                 </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        گزارش
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" href="/reports/visitreport">گزارش تعداد مراجعه مشتری</a></li>
+                                    </ul>
+                                </li>
                             }
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -91,11 +99,17 @@
                     </div>
                 }
                 <div>
-                    <img src="~/css/Ludo 33.png" width="200px"/>
+                    <img src="~/css/Ludo 33.png" width="200px" />
                 </div>
             </div>
         </nav>
     </header>
+    @if (user != null)
+    {
+        <div id="clock">
+        </div>
+        @Html.Partial("_ModalResult")
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -115,7 +129,7 @@
     <script src="~/js/select2.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
-        
+
     </script>
 </body>
 </html>

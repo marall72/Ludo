@@ -67,7 +67,7 @@ namespace Ludo.Controllers
             var currentUser = HttpContext.Items["User"] as User;
             if (model.Id > 0)
             {
-                var user = userBusiness.Update(model, currentUser.Id, out bool emailTaken, out bool usernameTaken);
+                var user = userBusiness.Update(model, currentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken); 
                 if(user == null)
                 {
                     return Redirect("/users/new");
@@ -81,6 +81,11 @@ namespace Ludo.Controllers
                     ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
                 }
 
+                if (mobileTaken)
+                {
+                    ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
+                }
+
                 if (ModelState.IsValid)
                 {
                     TempData["message"] = "کاربر با موفقیت بروزرسانی شد.";
@@ -88,22 +93,22 @@ namespace Ludo.Controllers
             }
             else
             {
-                var existingUser = userBusiness.GetByUsername(model.Username);
-                if (existingUser != null)
+                userBusiness.Add(model, currentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken);
+                TempData["message"] = "کاربر با موفقیت ایجاد شد.";
+
+                if (usernameTaken)
                 {
                     ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
                 }
 
-                existingUser = userBusiness.GetByEmail(model.Email);
-                if (existingUser != null)
+                if (emailTaken)
                 {
                     ModelState.AddModelError("", "این ایمیل قبلا استفاده شده است.");
                 }
 
-                if (ModelState.IsValid)
+                if (mobileTaken)
                 {
-                    userBusiness.Add(model, currentUser.Id);
-                    TempData["message"] = "کاربر با موفقیت ایجاد شد.";
+                    ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
                 }
             }
 

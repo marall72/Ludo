@@ -2,6 +2,7 @@
 using Ludo.Models;
 using Ludo.ViewModels;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using static System.Collections.Specialized.BitVector32;
 
 namespace Ludo.Business
@@ -33,7 +34,8 @@ namespace Ludo.Business
                     DateTime = DateTime.Now,
                     Description = JsonSerializer.Serialize(new { stationId = stationId, gameIds = gameIds}, new JsonSerializerOptions
                     {
-                        MaxDepth = 2
+                        ReferenceHandler = ReferenceHandler.Preserve,
+                        WriteIndented = true
                     }),
                     LogType = LogType.AddedStationGames,
                     UserId = currentUserId
@@ -54,7 +56,8 @@ namespace Ludo.Business
                     DateTime = DateTime.Now,
                     Description = JsonSerializer.Serialize(new { stationId = stationId, games = games }, new JsonSerializerOptions
                     {
-                        MaxDepth = 2
+                        ReferenceHandler = ReferenceHandler.Preserve,
+                        WriteIndented = true
                     }),
                     LogType = LogType.DeleteStationGames,
                     UserId = currentUserId

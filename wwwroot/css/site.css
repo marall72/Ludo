@@ -76,3 +76,15 @@ body {
 .reservationOngoing td {
     background: #0080002b;
 }
+
+#clock {
+    float: left;
+    margin: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    direction: ltr;
+}
+
+.card{
+    margin-bottom: 10px;
+}

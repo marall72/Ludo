@@ -4,6 +4,7 @@ using Ludo.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using static System.Collections.Specialized.BitVector32;
 
 namespace Ludo.Business
@@ -46,7 +47,8 @@ namespace Ludo.Business
                 DateTime = DateTime.Now,
                 Description = JsonSerializer.Serialize(station, new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.AddStation,
                 UserId = currentUserId
@@ -80,7 +82,8 @@ namespace Ludo.Business
                 DateTime = DateTime.Now,
                 Description = JsonSerializer.Serialize(existingStation, new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.EditStation,
                 UserId = currentUserId
@@ -120,7 +123,8 @@ namespace Ludo.Business
                 Description = JsonSerializer.Serialize(station,
                 new JsonSerializerOptions
                 {
-                    MaxDepth = 2
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
                 }),
                 LogType = LogType.DeleteStaion,
                 UserId = currentUserId

@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Ludo.Controllers
 {
@@ -35,9 +37,8 @@ namespace Ludo.Controllers
         [ViewbagAssignment]
         public IActionResult Index(int? id)
         {
-            //todo: vaqti tarikho saat namotabare redirect mikone be home va selected hour mipare
-            //todo: on delete i got error on possible circular for json even for level 2
-            //todo: figure out what's going on with overlap reservations didn't seem right
+            //TODO: paging for everything
+            //todo: change alerts to modals
             var model = new LoginViewModel();
             var clients = clientBusiness.GetClients(null);
             var stations = stationBusiness.GetStations(true);
@@ -67,15 +68,14 @@ namespace Ludo.Controllers
                 model.Reservations.Reservation.ToTime = availableReservation.To.ToString("HH:mm");
                 model.Reservations.Reservation.ToDate = HelperMethods.ConvertMiladiToShamsi(availableReservation.To, false);
                 model.Reservations.Reservation.FromTime = availableReservation.From.ToString("HH:mm");
-                model.Reservations.Reservation.ToDate = HelperMethods.ConvertMiladiToShamsi(availableReservation.From, false);
+                model.Reservations.Reservation.FromDate = HelperMethods.ConvertMiladiToShamsi(availableReservation.From, false);
                 model.Reservations.Reservation.ClientId = availableReservation.ClientId;
                 model.Reservations.Reservation.StationId = availableReservation.StationId;
                 selectedGameIds = availableReservation.ReservationGames.Select(x => x.GameId).ToList();
             }
 
-           
 
-            var stationGames = stationGameBusiness.GetAllStationGames(model.Reservations.Reservation.Id > 0 ? model.Reservations.Reservation.StationId : stations.FirstOrDefault().Id );
+            var stationGames = stationGameBusiness.GetAllStationGames(model.Reservations.Reservation.Id > 0 ? model.Reservations.Reservation.StationId : stations.FirstOrDefault().Id);
             model.Reservations.Reservation.Games = gameBusiness.GetGameSelection(stationGames.Select(x => x.GameId).ToList());
 
             model.Reservations.Reservation.Games.SelectedGamesIds = selectedGameIds;

@@ -4,6 +4,7 @@ using Ludo.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace Ludo.Business
 {
     public enum ReservationStatus
@@ -66,7 +67,7 @@ namespace Ludo.Business
             logBusiness.Add(new Log
             {
                 DateTime = DateTime.Now,
-                Description = JsonSerializer.Serialize(model, new JsonSerializerOptions { MaxDepth = 2 }),
+                Description = JsonSerializer.Serialize(model, new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true }),
                 LogType = LogType.AddReservation,
                 UserId = currentUserId
             });
@@ -116,7 +117,11 @@ namespace Ludo.Business
             logBusiness.Add(new Log
             {
                 DateTime = DateTime.Now,
-                Description = JsonSerializer.Serialize(reservation, new JsonSerializerOptions { MaxDepth = 2 }),
+                Description = JsonSerializer.Serialize(reservation, new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                }),
                 LogType = LogType.EditReservation,
                 UserId = currentUserId
             });
@@ -162,6 +167,18 @@ namespace Ludo.Business
             }
         }
 
+        public List<VisitReportItem> GetReservationReport(DateTime from, DateTime to, int? clientId)
+        {
+            return dbContext.Reservations.Where(x => 
+            ((clientId == null || clientId == 0) || x.ClientId == clientId.Value) &&
+            (x.From.Date >= from.Date && x.From.Date < to.Date)).GroupBy(x=> x.ClientId).Select(x=> new VisitReportItem
+            {
+                ClientId = x.Key,
+                ClientName = x.Where(a=> a.ClientId == x.Key).Select(a=> a.Client.Firstname + " " + a.Client.Lastname).FirstOrDefault(),
+                VisitCount = x.Count()
+            }).ToList();
+        }
+
         public bool Delete(int id, int currentUserId)
         {
             var reservation = GetById(id);
@@ -173,7 +190,7 @@ namespace Ludo.Business
             logBusiness.Add(new Log
             {
                 DateTime = DateTime.Now,
-                Description = JsonSerializer.Serialize(reservation, new JsonSerializerOptions { MaxDepth = 2 }),
+                Description = JsonSerializer.Serialize(reservation, new JsonSerializerOptions { ReferenceHandler = ReferenceHandler.Preserve, WriteIndented = true }),
                 LogType = LogType.DeleteReservation,
                 UserId = currentUserId
             });

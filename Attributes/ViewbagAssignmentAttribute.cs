@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ludo.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.Json;
 
 namespace Ludo.Attributes
 {
@@ -12,6 +14,9 @@ namespace Ludo.Attributes
             {
                 controller.ViewBag.Result = controller.TempData["Result"];
                 controller.ViewBag.Error = controller.TempData["Error"];
+
+                if (controller.TempData["ModalResult"] != null)
+                    controller.ViewBag.ModalResult = JsonSerializer.Deserialize<ModalResult>(controller.TempData["ModalResult"].ToString());
             }
 
             base.OnActionExecuting(context);

@@ -5,6 +5,9 @@ using Ludo.Models;
 using Ludo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Ludo.Controllers
 {
@@ -31,11 +34,19 @@ namespace Ludo.Controllers
                 }
                 if (crash)
                 {
-                    TempData["error"] = "تداخل در ثبت رزرو";
+                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                    {
+                        IsError = true,
+                        Message = "تداخل در ثبت رزرو"
+                    });
                 }
                 else if (invalidDate)
                 {
-                    TempData["error"] = "تاریخ و ساعت نامعتبر";
+                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                    {
+                        IsError = true,
+                        Message = "تاریخ و ساعت نامعتبر"
+                    }); 
                 }
                 else
                 {
@@ -47,12 +58,19 @@ namespace Ludo.Controllers
                 reservationBusiness.Add(model.Reservation, user.Id, out bool crash, out bool invalidDate);
                 if (crash)
                 {
-                    //todo: this is not working right
-                    TempData["error"] = "تداخل در ثبت رزرو";
+                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                    {
+                        IsError = true,
+                        Message = "تداخل در ثبت رزرو"
+                    });
                 }
                 else if (invalidDate)
                 {
-                    TempData["error"] = "تاریخ و ساعت نامعتبر";
+                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                    {
+                        IsError = true,
+                        Message = "تاریخ و ساعت نامعتبر"
+                    });
                 }
                 else
                 {
