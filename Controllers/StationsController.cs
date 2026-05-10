@@ -21,10 +21,28 @@ namespace Ludo.Controllers
         }
 
         [ViewbagAssignment]
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
+            if (page <= 0)
+            {
+                return RedirectToAction("index", new { page = 1 });
+            }
+
             var model = new StationListViewModel();
-            model.Stations = stationBusiness.GetStations(null);
+            model.Stations = stationBusiness.GetStations(null, page, PagingViewModel.PageSize, out int totalItemCount);
+
+            model.Paging = new PagingViewModel
+            {
+                Action = "index",
+                Controller = "stations",
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                TotalCount = totalItemCount
+            };
+
+            if (page > model.Paging.PageCount)
+                return RedirectToAction("index", new { page = 1 });
+
             return View(model);
         }
 

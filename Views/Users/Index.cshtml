@@ -21,7 +21,10 @@
                 <tr>
                     <th>#</th>
                     <th>نام کاربری</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
                     <th>ایمیل</th>
+                    <th>موبایل</th>
                     <th>وضعیت</th>
                     <th>عملیات</th>
                 </tr>
@@ -34,7 +37,10 @@
                         <tr>
                             <td>@user.Id</td>
                             <td>@user.Username</td>
+                            <td>@user.Firstname</td>
+                            <td>@user.Lastname</td>
                             <td>@user.Email</td>
+                            <td>@user.Mobile</td>
                             <td>@(user.IsActive ? "فعال" : "غیرفعال")</td>
                             <td>
                                 <a href="@Url.Action("new", "users", new { id = user.Id })" class="btn btn-sm btn-primary me-1">
@@ -50,11 +56,12 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" class="text-center">هیچ کاربری یافت نشد.</td>
+                        <td colspan="8" class="text-center">هیچ کاربری یافت نشد.</td>
                     </tr>
                 }
             </tbody>
         </table>
+         @Html.Partial("_Paging", Model.Paging)
     </div>
 </div>
 

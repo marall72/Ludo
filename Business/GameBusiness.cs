@@ -105,9 +105,12 @@ namespace Ludo.Business
             return dbContext.Games.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Game> GetGames(string? q)
+        public List<Game> GetGames(string? q, int page, int pageSize, out int totalItemCount)
         {
-            return dbContext.Games.Where(x => string.IsNullOrEmpty(q) || (x.Title.Contains(q))).ToList();
+            totalItemCount = dbContext.Games.Where(x => string.IsNullOrEmpty(q) || (x.Title.Contains(q))).Count();
+
+            return dbContext.Games.Where(x => string.IsNullOrEmpty(q) || (x.Title.Contains(q)))
+                .Skip((page - 1) * pageSize).Take(totalItemCount).ToList();
         }
 
         public bool Delete(int id, int currentUserId, out bool isUsed)

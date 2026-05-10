@@ -157,9 +157,11 @@ namespace Ludo.Business
             return dbContext.Users.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<User> GetUsers()
+        public List<User> GetUsers(int page, int pageSize, out int totalItemCount)
         {
-            return dbContext.Users.ToList();
+            totalItemCount = dbContext.Users.Count();
+
+            return dbContext.Users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public bool Delete(int id, int currentUserId, out bool isUsed)

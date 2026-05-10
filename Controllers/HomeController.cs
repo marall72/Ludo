@@ -37,15 +37,14 @@ namespace Ludo.Controllers
         [ViewbagAssignment]
         public IActionResult Index(int? id)
         {
-            //TODO: paging for everything
             //todo: change alerts to modals
-            //todo: tuie home default baraie reserve kasi select nabashe va ejbari bashe entekhab
+            //todo: a client can reserve multiple stations
             var model = new LoginViewModel();
-            var clients = clientBusiness.GetClients(null);
-            var stations = stationBusiness.GetStations(true);
+            var clients = clientBusiness.GetClients(null, 1, 0, out int clientTotalItemCount);
+            var stations = stationBusiness.GetStations(true, 1, 10000, out int stationsTotalItemCount);
             model.Reservations = new ReservationListViewModel
             {
-                Reservations = reservationBusiness.GetReservations(false),
+                Reservations = reservationBusiness.GetReservations(false, 1, 10000, out int totalItemCount),
                 Reservation = new EditReservation()
                 {
                     Clients = clients.Select(x => new SelectListItem
@@ -60,6 +59,11 @@ namespace Ludo.Controllers
                     }).ToList()
                 }
             };
+
+            model.Reservations.Reservation.Clients.Insert(0, new SelectListItem
+            {
+                Text = "انتخاب کنید"
+            });
 
             var selectedGameIds = new List<int>();
             if (id != null && id > 0)

@@ -2,7 +2,7 @@
 
 namespace Ludo.ViewModels
 {
-    public class UserListViewModel
+    public class UserListViewModel : BaseListViewModel
     {
         public UserListViewModel()
         {

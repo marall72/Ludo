@@ -96,9 +96,11 @@ namespace Ludo.Business
             return dbContext.Stations.Include(x => x.StationGames).ThenInclude(x => x.Game).FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Station> GetStations(bool? isActive)
+        public List<Station> GetStations(bool? isActive, int page, int pageSize, out int totalItemCount)
         {
-            return dbContext.Stations.Where(x=> isActive == null || x.IsActive == isActive).Include(x => x.StationGames).ThenInclude(x => x.Game).ToList();
+            totalItemCount = dbContext.Stations.Where(x => isActive == null || x.IsActive == isActive).Count();
+
+            return dbContext.Stations.Where(x=> isActive == null || x.IsActive == isActive).Include(x => x.StationGames).ThenInclude(x => x.Game).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public bool Delete(int id, int currentUserId, out bool isUsed)

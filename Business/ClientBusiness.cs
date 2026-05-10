@@ -100,9 +100,18 @@ namespace Ludo.Business
             return dbContext.Clients.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Client> GetClients(string? q)
+        public List<Client> GetClients(string? q, int page, int pageSize, out int totalItemCount)
         {
-            return dbContext.Clients.Where(x=> string.IsNullOrEmpty(q) || (x.Mobile.Contains(q) || (x.Firstname + " " + x.Lastname).Contains(q))).ToList();
+            totalItemCount = dbContext.Clients.Where(x => string.IsNullOrEmpty(q) || (x.Mobile.Contains(q) || (x.Firstname + " " + x.Lastname).Contains(q))).Count();
+
+            var items = dbContext.Clients.Where(x => string.IsNullOrEmpty(q) || (x.Mobile.Contains(q) || (x.Firstname + " " + x.Lastname).Contains(q)));
+
+            if (pageSize > 0)
+            {
+                return items.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            }
+
+            return items.ToList();
         }
 
         public bool Delete(int id, int currentUserId, out bool isUsed)
@@ -114,7 +123,7 @@ namespace Ludo.Business
             {
                 var clientReservation = reservationBusiness.ClientHasReservation(id);
 
-                if(clientReservation != null)
+                if (clientReservation != null)
                 {
                     isUsed = true;
                     return false;

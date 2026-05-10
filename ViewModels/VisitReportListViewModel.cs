@@ -21,7 +21,7 @@ namespace Ludo.ViewModels
             To = to;
         }
 
-        public double TotalDays { get { return (To - From).TotalDays; } }
+        public int TotalDays { get { return Convert.ToInt16((To - From).TotalDays); } }
 
         public DateTime From { get; set; }
         public DateTime To { get; set; }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ludo.ViewModels
 {
-    public class GameListViewModel
+    public class GameListViewModel : BaseListViewModel
     {
         public GameListViewModel()
         {

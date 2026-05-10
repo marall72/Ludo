@@ -39,6 +39,7 @@
                                 <div class="row">
                                     @Html.DropDownListFor(model => model.Reservation.ClientId, Model.Reservation.Clients, new { @class = "form-select select2 rtl " })
                                     @Html.LabelFor(model => model.Reservation.ClientId)
+                                    <span asp-validation-for="Reservation.ClientId" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -126,13 +127,13 @@
                 }
             </tbody>
         </table>
+        @if (Model.IsArchive)
+        {
+            @Html.Partial("_Paging", Model.Paging)
+        }
     </div>
 </div>
 
 @section Scripts {
-    <script>
-
-       
-
-    </script>
+   
 }

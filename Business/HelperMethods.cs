@@ -33,7 +33,7 @@ namespace Ludo.Business
         {
             var pc = new PersianCalendar();
 
-            return $"{pc.GetYear(date):0000}/{pc.GetMonth(date):00}/{pc.GetDayOfMonth(date):00} {(showTime? date.ToString("HH:mm") : "")}";
+            return $"{pc.GetYear(date):0000}/{pc.GetMonth(date):00}/{pc.GetDayOfMonth(date):00} {(showTime? date.ToShortTimeString() : "")}";
         }
 
 

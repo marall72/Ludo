@@ -2,7 +2,7 @@
 
 namespace Ludo.ViewModels
 {
-    public class StationListViewModel
+    public class StationListViewModel : BaseListViewModel
     {
         public StationListViewModel()
         {

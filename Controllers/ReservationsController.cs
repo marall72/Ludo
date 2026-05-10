@@ -25,6 +25,7 @@ namespace Ludo.Controllers
         public IActionResult New(ReservationListViewModel model)
         {
             var user = HttpContext.Items["User"] as User;
+            var state = ModelState;
             if (model.Reservation.Id > 0)
             {
                 var reservation = reservationBusiness.Update(model.Reservation, user.Id, out bool crash, out bool invalidDate);
@@ -98,14 +99,29 @@ namespace Ludo.Controllers
         }
 
         [ViewbagAssignment]
-        public IActionResult Index() {
-            ViewBag.Result = TempData["message"] as string;
-            ViewBag.Error = TempData["error"] as string;
+        public IActionResult Index(int page = 1) {
+            if (page <= 0)
+            {
+                return RedirectToAction("index", new { page = 1 });
+            }
+
             var model = new ReservationListViewModel
             {
-                Reservations = reservationBusiness.GetReservations(true),
+                Reservations = reservationBusiness.GetReservations(true, page, PagingViewModel.PageSize, out int totalItemCount),
                 IsArchive = true
             };
+
+            model.Paging = new PagingViewModel
+            {
+                Action = "index",
+                Controller = "reservations",
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                TotalCount = totalItemCount
+            };
+
+            if (page > model.Paging.PageCount)
+                return RedirectToAction("index", new { page = 1 });
 
             return View(model);
         }

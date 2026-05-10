@@ -14,10 +14,17 @@ namespace Ludo.ViewModels
             var now = DateTime.Now;
             ToDate = FromDate = HelperMethods.ConvertMiladiToShamsi(now, false);
 
-            var nowPlus = DateTime.Now.AddHours(1);
+            var nowPlus = now.AddHours(1);
+            
+            if(nowPlus.Date > now.Date)
+            {
+                ToDate = HelperMethods.ConvertMiladiToShamsi(nowPlus, false);
+            }
+
             FromTime = now.ToString("HH:mm");
-            ToTime = now.AddHours(1).ToString("HH:mm");
-            //todo: if to time is passed 12 AM then date should be added 1 days
+            ToTime = nowPlus.ToString("HH:mm");
+
+            Games = new GameSelection();
         }
 
         public int Id { get; set; }
@@ -28,6 +35,7 @@ namespace Ludo.ViewModels
 
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         [Display(Name = "مشتری")]
+        [Range(1, int.MaxValue, ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         public int ClientId { get; set; }
 
         public List<SelectListItem> Clients { get; set; }

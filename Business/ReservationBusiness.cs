@@ -139,14 +139,20 @@ namespace Ludo.Business
             return dbContext.Reservations.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Reservation> GetReservations(bool isArchive)
+        public List<Reservation> GetReservations(bool isArchive, int page, int pageSize, out int totalItemCount)
         {
+            totalItemCount = 0;
             if (isArchive)
+            {
+                totalItemCount = dbContext.Reservations.Count();
+
                 return dbContext.Reservations
                     .Include(x => x.ReservationGames).ThenInclude(x => x.Game)
                     .Include(x => x.Client)
                     .Include(x => x.Station)
+                    .Skip((page - 1) * pageSize).Take(pageSize)
                     .OrderBy(x => x.From).ToList();
+            }
 
             else
             {

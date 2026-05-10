@@ -19,17 +19,45 @@ namespace Ludo.Controllers
         }
 
         [ViewbagAssignmentAttribute]
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
+            if (page <= 0)
+            {
+                return RedirectToAction("index", new { page = 1 });
+            }
+
             var model = new ClientListViewModel();
-            model.Clients = clientBusiness.GetClients(null);
+            model.Clients = clientBusiness.GetClients(null, page, PagingViewModel.PageSize, out int totalItemCount);
+
+            model.Paging = new PagingViewModel
+            {
+                Action = "index",
+                Controller = "clients",
+                CurrentPage = page,
+                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                TotalCount = totalItemCount
+            };
+
+            if (page > model.Paging.PageCount)
+                return RedirectToAction("index", new { page = 1 });
+
             return View(model);
         }
 
         [HttpPost]
         public IActionResult Index(ClientListViewModel model)
         {
-            model.Clients = clientBusiness.GetClients(model.SearchText);
+            model.Clients = clientBusiness.GetClients(model.SearchText, 1 , PagingViewModel.PageSize, out int totalItemCount);
+
+            model.Paging = new PagingViewModel
+            {
+                Action = "index",
+                Controller = "clients",
+                CurrentPage = 1,
+                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                TotalCount = totalItemCount
+            };
+
             return View(model);
         }
 

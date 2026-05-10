@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Ludo.ViewModels
 {
-    public class ReservationListViewModel
+    public class ReservationListViewModel : BaseListViewModel
     {
         public bool IsArchive { get; set; }
 

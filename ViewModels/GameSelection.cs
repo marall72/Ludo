@@ -22,7 +22,7 @@ namespace Ludo.ViewModels
         }
 
         [Display(Name = "بازی ها")]
-        public List<int> SelectedGamesIds { get; set; }
+        public List<int>? SelectedGamesIds { get; set; }
 
         public List<SelectListItem> Games { get; set; }
     }

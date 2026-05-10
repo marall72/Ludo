@@ -1,9 +1,9 @@
 ﻿@model Ludo.ViewModels.GameSelection
 
-<div class="form-floating mb-3" id="levelWrapper">
+ <div class="form-floating mb-3" id="levelWrapper">
     @Html.ListBoxFor(model => model.SelectedGamesIds, Model.Games, new { multiple = "multiple", @class = "form-select select2", style = "height: 200px;", id = "Reservation_Games_SelectedGamesIds", name = "Reservation.Games.SelectedGamesIds" })
     @Html.LabelFor(model => model.SelectedGamesIds)
-</div>
+</div> 
 
 <script>
     //TODO: do i need bellow code? seems to be doing nothing

@@ -51,7 +51,7 @@ namespace Ludo.Controllers
             {
                 new SelectListItem{ Text = "انتخاب کنید", Value = "0", Selected = true}
             };
-            var clients = clientBusiness.GetClients(null);
+            var clients = clientBusiness.GetClients(null, 1, 0, out int totalItemCount);
             if (clients != null)
             {
                 model.Clients.AddRange(clients.Select(x => new SelectListItem
