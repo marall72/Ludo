@@ -16,8 +16,8 @@ namespace Ludo.Database
 
             // Seed data
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Firstname = "admin", Lastname = "admin", CreateDate = new DateTime(1993, 9,25), Email = "marall@live.com", Mobile = "09353947257", Password = "admin", UpdateDate = new DateTime(1993, 9, 25), Username = "admin", IsAdmin = true, IsActive = true },
-                new User { Id = 2, Firstname = "support", Lastname = "support", CreateDate = new DateTime(1993, 9, 25), Email = "marall@live.com", Mobile = "09351111111", Password = "support", UpdateDate = new DateTime(1993, 9, 25), Username = "support", IsAdmin = false, IsActive = true }
+                new User { Id = 1, Firstname = "دانا", Lastname = "توانا", CreateDate = new DateTime(1993, 9,25), Email = "marall@live.com", Mobile = "09352222222", Password = "admin", UpdateDate = new DateTime(1993, 9, 25), Username = "admin", IsAdmin = true, IsActive = true },
+                new User { Id = 2, Firstname = "کاربر", Lastname = "پشتیبانی", CreateDate = new DateTime(1993, 9, 25), Email = "marall@live.com", Mobile = "09351111111", Password = "support", UpdateDate = new DateTime(1993, 9, 25), Username = "support", IsAdmin = false, IsActive = true }
             );
         }
 

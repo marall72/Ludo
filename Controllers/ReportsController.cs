@@ -35,8 +35,12 @@ namespace Ludo.Controllers
         [HttpPost]
         public IActionResult VisitReport(VisitReportListViewModel model)
         {
-            model.Items = reservationBusiness.GetReservationReport(HelperMethods.ConvertShamsiToMiladi(model.FromDate, null), HelperMethods.ConvertShamsiToMiladi(model.ToDate, null), model.ClientId);
+            var fromDate = HelperMethods.ConvertShamsiToMiladi(model.FromDate, null);
+            var toDate = HelperMethods.ConvertShamsiToMiladi(model.ToDate, null);
 
+            model.Items = reservationBusiness.GetReservationReport(fromDate, toDate, model.ClientId);
+            model.From = fromDate;
+            model.To = toDate;
             FillCustomers(model);
             return View(model);
         }

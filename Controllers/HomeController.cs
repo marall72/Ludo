@@ -39,6 +39,7 @@ namespace Ludo.Controllers
         {
             //TODO: paging for everything
             //todo: change alerts to modals
+            //todo: tuie home default baraie reserve kasi select nabashe va ejbari bashe entekhab
             var model = new LoginViewModel();
             var clients = clientBusiness.GetClients(null);
             var stations = stationBusiness.GetStations(true);

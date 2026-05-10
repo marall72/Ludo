@@ -169,13 +169,27 @@ namespace Ludo.Business
 
         public List<VisitReportItem> GetReservationReport(DateTime from, DateTime to, int? clientId)
         {
-            return dbContext.Reservations.Where(x => 
+            var reportRaw = dbContext.Reservations.Where(x =>
             ((clientId == null || clientId == 0) || x.ClientId == clientId.Value) &&
-            (x.From.Date >= from.Date && x.From.Date < to.Date)).GroupBy(x=> x.ClientId).Select(x=> new VisitReportItem
+            (x.From.Date >= from.Date && x.From.Date < to.Date))
+                .Include(x=> x.Client)
+                .Include(x=> x.Creator)
+                .GroupBy(x => new { x.ClientId, x.CreatorId }).Select(x => new
+                {
+                    ClientId = x.Key.ClientId,
+                    Client = x.FirstOrDefault(a => a.ClientId == x.Key.ClientId).Client,
+                    VisitCount = x.Count(),
+                    Reservations = x.ToList(),
+                    User = x.First().Creator
+                }).ToList();
+
+            return reportRaw.Select(x=> new VisitReportItem
             {
-                ClientId = x.Key,
-                ClientName = x.Where(a=> a.ClientId == x.Key).Select(a=> a.Client.Firstname + " " + a.Client.Lastname).FirstOrDefault(),
-                VisitCount = x.Count()
+                ClientId = x.ClientId,
+                ClientName = x.Client.Firstname + " " + x.Client.Lastname,
+                Reservations = x.Reservations,
+                ResponsibleUser = x.User.Firstname + " " + x.User.Lastname,
+                VisitCount = x.VisitCount
             }).ToList();
         }
 

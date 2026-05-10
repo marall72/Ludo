@@ -52,7 +52,10 @@
                 <tr>
                     <th>#</th>
                     <th>نام</th>
+                    <th>مسئول ثبت</th>
+                    <th>تعداد ساعت رزرو</th>
                     <th>تعداد دفعه مراجعه</th>
+                    <th>در چند روز گذشته</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,8 +66,13 @@
                         <tr>
                             <td>@client.ClientId</td>
                             <td>@client.ClientName</td>
+                            <td>@client.ResponsibleUser</td>
+                            <td>@client.TotalHours ساعت</td>
                             <td style="width: 154px;text-align: center;">
-                                @client.VisitCount
+                                @client.VisitCount دفعه
+                            </td>
+                            <td>
+                                در @Model.TotalDays روز
                             </td>
                         </tr>
                     }

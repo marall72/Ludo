@@ -4,6 +4,7 @@ using Ludo.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ludo.Migrations
 {
     [DbContext(typeof(LudoDbContext))]
-    partial class LudoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510043232_changedSeedUserInfo")]
+    partial class changedSeedUserInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,7 +357,7 @@ namespace Ludo.Migrations
                             IsActive = true,
                             IsAdmin = true,
                             Lastname = "توانا",
-                            Mobile = "09352222222",
+                            Mobile = "09353947257",
                             Password = "admin",
                             UpdateDate = new DateTime(1993, 9, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Username = "admin"
