@@ -2,12 +2,19 @@
 
 
 @{
-    ViewData["Title"] = "ثبت سیستم جدید";
+    if(Model.Id > 0)
+    {
+        ViewData["Title"] = "ویرایش سیستم";
+    }
+    else
+    {
+        ViewData["Title"] = "ثبت سیستم جدید";
+    }
 }
 
 <div class="container">
     <div class="form-signin">
-        <h1 class="h3 mb-3 fw-normal text-center">@ViewData["Title"]</h1>
+        <h4 class="h4">@ViewData["Title"]</h4>
         <div class="btn-group-custom">
             <a href="@Url.Action("index", "stations")" class="btn btn-info">
                 <i class="bi bi-plus-circle"></i> فهرست سیستم ها
@@ -54,10 +61,6 @@
                 @Html.DropDownListFor(model => model.SelectedStationLevel, Model.StationLevels, null, new { @class = "form-select" })
                 @Html.LabelFor(model => model.SelectedStationLevel)
                 <span asp-validation-for="SelectedStationLevel" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                @Html.EditorFor(model => model.Games, "_Games")
             </div>
             <div class="form-check mb-3">
                 @Html.CheckBoxFor(model => model.IsActive, new { @class = "form-check-input" })

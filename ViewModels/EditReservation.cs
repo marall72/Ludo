@@ -31,7 +31,7 @@ namespace Ludo.ViewModels
 
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         [Display(Name = "سیستم")]
-        public int StationId { get; set; }
+        public List<int> StationIds { get; set; }
 
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         [Display(Name = "مشتری")]
@@ -39,16 +39,17 @@ namespace Ludo.ViewModels
         public int ClientId { get; set; }
 
         public List<SelectListItem> Clients { get; set; }
+        
         public List<SelectListItem> Stations { get; set; }
 
 
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
-        [Display(Name = "از ساعت")]
+        [Display(Name = "از")]
         public string FromDate { get; set; }
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         public string FromTime { get; set; }
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
-        [Display(Name = "تا ساعت")]
+        [Display(Name = "تا")]
         public string ToDate { get; set; }
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
         public string ToTime { get; set; }

@@ -25,8 +25,8 @@ namespace Ludo.Models
         Logout,
         AddReservationGame,
         DeleteReservationGame,
-        AddedStationGames,
-        DeleteStationGames
+        AddedReservationStation,
+        DeleteReservationStation
     }
 
     public class Log

@@ -27,10 +27,11 @@
                 </button>
                 @if (user != null)
                 {
+                    @Html.Partial("_ToastReservationChecker", new Ludo.ViewModels.ToastReservationCheckerViewModel())
                     <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">خانه</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">ثبت رزرو</a>
                             </li>
 
                             @if (user.IsAdmin)

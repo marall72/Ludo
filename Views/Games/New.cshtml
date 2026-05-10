@@ -3,12 +3,19 @@
 
 
 @{
-    ViewData["Title"] = "ثبت بازی جدید";
+    if(Model.Id > 0)
+    {
+        ViewData["Title"] = "ویرایش بازی";
+    }
+    else
+    {
+        ViewData["Title"] = "ثبت بازی جدید";
+    }
 }
 
 <div class="container">
     <div class="form-signin">
-        <h1 class="h3 mb-3 fw-normal text-center">@ViewData["Title"]</h1>
+        <h4 class="mb-4">@ViewData["Title"]</h4>
         <div class="btn-group-custom">
             <a href="@Url.Action("index", "games")" class="btn btn-info">
                 <i class="bi bi-plus-circle"></i> فهرست بازی ها

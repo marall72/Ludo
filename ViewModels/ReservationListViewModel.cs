@@ -7,10 +7,12 @@ namespace Ludo.ViewModels
     {
         public bool IsArchive { get; set; }
 
-        [Display(Name = "نام مشتری...")]
+        [Display(Name = "نام، کد، موبایل...")]
         public string SearchText { get; set; }
 
+        public int TodaysReservationCount { get; set; }
+
         public List<Reservation> Reservations { get; set; }
-        public EditReservation Reservation { get; set; }
+        public EditReservation NewReservation { get; set; }
     }
 }

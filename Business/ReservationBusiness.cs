@@ -18,10 +18,12 @@ namespace Ludo.Business
     public class ReservationBusiness : BaseBusiness
     {
         private ReservationGamesBusiness reservationGamesBusiness { get; set; }
+        private ReservationStationsBusiness reservationStationBusiness { get; set; }
 
         public ReservationBusiness(LudoDbContext db) : base(db)
         {
             reservationGamesBusiness = new ReservationGamesBusiness(dbContext);
+            reservationStationBusiness = new ReservationStationsBusiness(dbContext);
         }
 
         public EditReservation Add(EditReservation model, int currentUserId, out bool crash, out bool invalidDate)
@@ -36,7 +38,7 @@ namespace Ludo.Business
                 return model;
             }
 
-            var existingReservation = GetCrashes(from, to, model.StationId, null);
+            var existingReservation = GetCrashes(from, to, model.StationIds, null);
             if (existingReservation != null && existingReservation.Any())
             {
                 crash = true;
@@ -49,7 +51,6 @@ namespace Ludo.Business
                 UpdateDate = DateTime.Now,
                 CreatorId = currentUserId,
                 UpdaterId = currentUserId,
-                StationId = model.StationId,
                 ClientId = model.ClientId,
                 Description = model.Description,
                 From = from,
@@ -64,6 +65,13 @@ namespace Ludo.Business
                 reservationGamesBusiness.Add(model.Games.SelectedGamesIds, model.Id, currentUserId);
                 dbContext.SaveChanges();
             }
+
+            if (model.StationIds != null && model.StationIds.Any())
+            {
+                reservationStationBusiness.Add(model.StationIds, model.Id, currentUserId);
+                dbContext.SaveChanges();
+            }
+
             logBusiness.Add(new Log
             {
                 DateTime = DateTime.Now,
@@ -91,7 +99,7 @@ namespace Ludo.Business
                     return reservation;
                 }
 
-                var takenReservation = GetCrashes(from, to, model.StationId, model.Id);
+                var takenReservation = GetCrashes(from, to, model.StationIds, model.Id);
                 if (takenReservation != null && takenReservation.Any())
                 {
                     crash = true;
@@ -101,7 +109,6 @@ namespace Ludo.Business
                 reservation.UpdateDate = DateTime.Now;
                 reservation.CreatorId = currentUserId;
                 reservation.UpdaterId = currentUserId;
-                reservation.StationId = model.StationId;
                 reservation.ClientId = model.ClientId;
                 reservation.Description = model.Description;
                 reservation.From = from;
@@ -110,9 +117,13 @@ namespace Ludo.Business
                 dbContext.SaveChanges();
 
                 reservationGamesBusiness.DeleteAllGames(reservation.Id, currentUserId);
+                reservationStationBusiness.DeleteAllStations(reservation.Id, currentUserId);
 
                 if (model.Games != null && model.Games.SelectedGamesIds != null && model.Games.SelectedGamesIds.Any())
                     reservationGamesBusiness.Add(model.Games.SelectedGamesIds, reservation.Id, currentUserId);
+
+                if (model.StationIds != null && model.StationIds.Any())
+                    reservationStationBusiness.Add(model.StationIds, reservation.Id, currentUserId);
             }
             logBusiness.Add(new Log
             {
@@ -128,10 +139,13 @@ namespace Ludo.Business
             return reservation;
         }
 
-        public List<Reservation> GetCrashes(DateTime from, DateTime to, int stationId, int? excludedReservationId)
+        public List<Reservation> GetCrashes(DateTime from, DateTime to, List<int> stationIds, int? excludedReservationId)
         {
-            //this aint working right
-            return dbContext.Reservations.Where(x => ((x.From >= from && x.From <= to) || (x.To >= from && x.To <= to)) && x.StationId == stationId && (excludedReservationId == null || x.Id != excludedReservationId)).ToList();
+            return dbContext.Reservations
+                .Where(x => ((from >= x.From && from <= x.To) || (to >= x.From && to <= x.To))
+                && x.ReservationStations.Any(a=> stationIds.Contains(a.StationId))
+                && (excludedReservationId == null || x.Id != excludedReservationId))
+                .ToList();
         }
 
         public Reservation GetById(int id)
@@ -139,7 +153,12 @@ namespace Ludo.Business
             return dbContext.Reservations.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Reservation> GetReservations(bool isArchive, int page, int pageSize, out int totalItemCount)
+        public int GetTodaysReservationCount()
+        {
+            return dbContext.Reservations.Where(x => x.From.Date == DateTime.Now.Date).Count();
+        }
+
+        public List<Reservation> GetReservations(string q, bool isArchive, int page, int pageSize, out int totalItemCount)
         {
             totalItemCount = 0;
             if (isArchive)
@@ -147,9 +166,10 @@ namespace Ludo.Business
                 totalItemCount = dbContext.Reservations.Count();
 
                 return dbContext.Reservations
+                    .Where(x => string.IsNullOrEmpty(q) || (x.Client.Firstname + " " + x.Client.Lastname).Contains(q) || x.Client.Mobile.Contains(q) || x.Client.Id.ToString() == q || x.Id.ToString() == q)
                     .Include(x => x.ReservationGames).ThenInclude(x => x.Game)
                     .Include(x => x.Client)
-                    .Include(x => x.Station)
+                    .Include(x => x.ReservationStations).ThenInclude(x=> x.Station)
                     .Skip((page - 1) * pageSize).Take(pageSize)
                     .OrderBy(x => x.From).ToList();
             }
@@ -159,18 +179,32 @@ namespace Ludo.Business
                 var reservations = new List<Reservation>();
                 var now = DateTime.Now;
                 reservations.AddRange(dbContext.Reservations
+                    .Where(x => string.IsNullOrEmpty(q) || (x.Client.Firstname + " " + x.Client.Lastname).Contains(q) || x.Client.Mobile.Contains(q) || x.Client.Id.ToString() == q || x.Id.ToString() == q)
                     .Include(x => x.ReservationGames).ThenInclude(x => x.Game)
                     .Include(x => x.Client)
-                    .Include(x => x.Station)
+                    .Include(x => x.ReservationStations).ThenInclude(x => x.Station)
                     .OrderByDescending(x => x.To).Where(x => x.To < now).Take(3));
+
                 reservations.AddRange(dbContext.Reservations
+                    .Where(x => string.IsNullOrEmpty(q) || (x.Client.Firstname + " " + x.Client.Lastname).Contains(q) || x.Client.Mobile.Contains(q) || x.Client.Id.ToString() == q || x.Id.ToString() == q)
                     .Include(x => x.ReservationGames).ThenInclude(x => x.Game)
                     .Include(x => x.Client)
-                    .Include(x => x.Station)
+                    .Include(x => x.ReservationStations).ThenInclude(x => x.Station)
                     .OrderBy(x => x.To).Where(x => x.To > now && !reservations.Select(x => x.Id).Contains(x.Id)).Take(50));
 
                 return reservations.Distinct().OrderBy(x => x.From).ToList();
             }
+        }
+
+        public List<Reservation> GetUpcomingReservations(int minutes)
+        {
+            var now = DateTime.Now;
+            var nowLimit = now.AddMinutes(minutes);
+
+            return dbContext.Reservations.Where(x => x.From > now && x.From < nowLimit)
+                .Include(x => x.Client)
+                .Include(x=> x.ReservationStations).ThenInclude(x=> x.Station)
+                .OrderByDescending(x => x.From).ToList();
         }
 
         public List<VisitReportItem> GetReservationReport(DateTime from, DateTime to, int? clientId)

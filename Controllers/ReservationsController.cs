@@ -5,6 +5,7 @@ using Ludo.Models;
 using Ludo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static System.Collections.Specialized.BitVector32;
@@ -26,9 +27,9 @@ namespace Ludo.Controllers
         {
             var user = HttpContext.Items["User"] as User;
             var state = ModelState;
-            if (model.Reservation.Id > 0)
+            if (model.NewReservation.Id > 0)
             {
-                var reservation = reservationBusiness.Update(model.Reservation, user.Id, out bool crash, out bool invalidDate);
+                var reservation = reservationBusiness.Update(model.NewReservation, user.Id, out bool crash, out bool invalidDate);
                 if (reservation == null)
                 {
                     //we do what?
@@ -56,7 +57,7 @@ namespace Ludo.Controllers
             }
             else
             {
-                reservationBusiness.Add(model.Reservation, user.Id, out bool crash, out bool invalidDate);
+                reservationBusiness.Add(model.NewReservation, user.Id, out bool crash, out bool invalidDate);
                 if (crash)
                 {
                     TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
@@ -79,10 +80,10 @@ namespace Ludo.Controllers
                 }
             }
 
-            if (TempData["error"] == null || model.Reservation.Id == 0)
+            if (TempData["error"] == null || model.NewReservation.Id == 0)
                 return RedirectToAction("index", "home");
 
-            return RedirectToAction("index", "home", new {id = model.Reservation.Id});
+            return RedirectToAction("index", "home", new {id = model.NewReservation.Id});
         }
 
         public IActionResult Delete(int id)
@@ -98,7 +99,6 @@ namespace Ludo.Controllers
             return Redirect("/home");
         }
 
-        [ViewbagAssignment]
         public IActionResult Index(int page = 1) {
             if (page <= 0)
             {
@@ -107,8 +107,9 @@ namespace Ludo.Controllers
 
             var model = new ReservationListViewModel
             {
-                Reservations = reservationBusiness.GetReservations(true, page, PagingViewModel.PageSize, out int totalItemCount),
-                IsArchive = true
+                Reservations = reservationBusiness.GetReservations(null, true, page, PagingViewModel.PageSize, out int totalItemCount),
+                IsArchive = true,
+                TodaysReservationCount = reservationBusiness.GetTodaysReservationCount()
             };
 
             model.Paging = new PagingViewModel
@@ -122,6 +123,25 @@ namespace Ludo.Controllers
 
             if (page > model.Paging.PageCount)
                 return RedirectToAction("index", new { page = 1 });
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Index(ReservationListViewModel model)
+        {
+            model.Reservations = reservationBusiness.GetReservations(model.SearchText, true, 1, PagingViewModel.PageSize, out int totalItemCount);
+            model.IsArchive = true;
+            model.TodaysReservationCount = reservationBusiness.GetTodaysReservationCount();
+            
+            model.Paging = new PagingViewModel
+            {
+                Action = "index",
+                Controller = "reservations",
+                CurrentPage = 1,
+                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                TotalCount = totalItemCount
+            };
 
             return View(model);
         }

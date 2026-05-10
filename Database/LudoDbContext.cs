@@ -25,9 +25,9 @@ namespace Ludo.Database
         public DbSet<Client> Clients { get; set; }
         public DbSet<Station> Stations { get; set; }
         public DbSet<Game> Games { get; set; }
-        public DbSet<StationGame> StationGames { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<ReservationGame> ReservationGames { get; set; }
+        public DbSet<ReservationStations> ReservationStations { get; set; }
         public DbSet<Log> Logs { get; set; }
     }
 }

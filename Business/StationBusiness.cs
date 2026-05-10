@@ -11,12 +11,10 @@ namespace Ludo.Business
 {
     public class StationBusiness : BaseBusiness
     {
-        private StationGameBusiness stationGameBusiness { get; set; }
         private ReservationBusiness reservationBusiness { get; set; }
 
         public StationBusiness(LudoDbContext db) : base(db)
         {
-            stationGameBusiness = new StationGameBusiness(db);
             reservationBusiness = new ReservationBusiness(db);
         }
 
@@ -37,9 +35,6 @@ namespace Ludo.Business
             };
             dbContext.Stations.Add(station);
             dbContext.SaveChanges();
-
-            var selectedGameIds = model.Games.Games.Where(x => x.Selected).Select(x => Convert.ToInt32(x.Value)).ToList();
-            stationGameBusiness.Add(selectedGameIds, model.Id, currentUserId);
 
             model.Id = station.Id;
             logBusiness.Add(new Log
@@ -73,9 +68,6 @@ namespace Ludo.Business
                 existingStation.Title = model.Title;
 
                 dbContext.SaveChanges();
-
-                var selectedGameIds = model.Games.SelectedGamesIds;
-                stationGameBusiness.Add(selectedGameIds, model.Id, currentUserId);
             }
             logBusiness.Add(new Log
             {
@@ -93,14 +85,14 @@ namespace Ludo.Business
 
         public Station GetById(int id)
         {
-            return dbContext.Stations.Include(x => x.StationGames).ThenInclude(x => x.Game).FirstOrDefault(x => x.Id == id);
+            return dbContext.Stations.FirstOrDefault(x => x.Id == id);
         }
 
         public List<Station> GetStations(bool? isActive, int page, int pageSize, out int totalItemCount)
         {
             totalItemCount = dbContext.Stations.Where(x => isActive == null || x.IsActive == isActive).Count();
 
-            return dbContext.Stations.Where(x=> isActive == null || x.IsActive == isActive).Include(x => x.StationGames).ThenInclude(x => x.Game).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            return dbContext.Stations.Where(x=> isActive == null || x.IsActive == isActive).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public bool Delete(int id, int currentUserId, out bool isUsed)

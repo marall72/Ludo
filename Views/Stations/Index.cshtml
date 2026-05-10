@@ -2,11 +2,11 @@
 @using Ludo.Models
 
 @{
-   ViewData["Title"] = "فهرست کاربران";
+   ViewData["Title"] = "فهرست سیستم ها";
 }
 
 <div class="container mt-4">
-    <h1 class="mb-4">فهرست سیستم ها</h1>
+    <h4 class="mb-4">@ViewData["Title"]</h4>
 
     @Html.Partial("_Result")
     <div class="mb-3">
@@ -24,7 +24,6 @@
                     <th>نوع</th>
                     <th>سطح</th>
                     <th>تعداد کاربر</th>
-                    <th>بازی ها</th>
                     <th>وضعیت</th>
                     <th>عملیات</th>
                 </tr>
@@ -40,7 +39,6 @@
                             <td>@user.StationType</td>
                             <td>@user.StationLevel</td>
                             <td>@user.PlayerCount</td>
-                            <td>@string.Join(" | ", user.StationGames.Select(x=> x.Game.Title))</td>
                             <td>@(user.IsActive ? "فعال" : "غیرفعال")</td>
                             <td>
                                 <a href="@Url.Action("new", "stations", new { id = user.Id })" class="btn btn-sm btn-primary me-1">

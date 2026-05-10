@@ -12,10 +12,8 @@ namespace Ludo.Controllers
     {
         private StationBusiness stationBusiness { get; set; }
         private GameBusiness gameBusiness { get; set; }
-        private StationGameBusiness stationGameBusiness { get; set; }
         public StationsController(LudoDbContext db)
         {
-            stationGameBusiness = new StationGameBusiness(db);
             stationBusiness = new StationBusiness(db);
             gameBusiness = new GameBusiness(db);
         }
@@ -48,7 +46,7 @@ namespace Ludo.Controllers
 
         public IActionResult New()
         {
-            return View(new EditStation(gameBusiness.GetGameSelection(null)) { IsActive = true, PlayerCount = 1 });
+            return View(new EditStation() { IsActive = true, PlayerCount = 1 });
         }
 
         [ViewbagAssignment]
@@ -56,10 +54,10 @@ namespace Ludo.Controllers
         public IActionResult New(int id)
         {
             var station = stationBusiness.GetById(id);
-            var model = new EditStation(gameBusiness.GetGameSelection(null));
+            var model = new EditStation();
             if (station != null)
             {
-                model = new EditStation(gameBusiness.GetGameSelection(null))
+                model = new EditStation()
                 {
                     Id = id,
                     Description = station.Description,
@@ -69,13 +67,6 @@ namespace Ludo.Controllers
                     SelectedStationType = station.StationType,
                     Title = station.Title
                 };
-
-                var stationGames = stationGameBusiness.GetAllStationGames(model.Id);
-                if (stationGames != null && stationGames.Any())
-                    foreach (var item in model.Games.Games.Where(x => stationGames.Select(a => a.GameId).Contains(Convert.ToInt32(x.Value))))
-                    {
-                        item.Selected = true;
-                    }
 
             }
             else if (id >= 0)

@@ -21,11 +21,6 @@ namespace Ludo.Models
     [Table("Station")]
     public class Station
     {
-        public Station()
-        {
-            StationGames = new HashSet<StationGame>();
-        }
-
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         [Required]
@@ -67,7 +62,5 @@ namespace Ludo.Models
         [ForeignKey("UpdaterId")]
         public User Updater { get; set; }
 
-        [InverseProperty("Station")]
-        public virtual ICollection<StationGame> StationGames { get; set; }
     }
 }

@@ -11,11 +11,6 @@ namespace Ludo.ViewModels
             
         }
 
-        public EditStation(GameSelection gs)
-        {
-            Games = gs;
-        }
-
         public int Id { get; set; }
 
         [Required(ErrorMessageResourceName = "IsRequired", ErrorMessageResourceType = typeof(Resources.Resource))]
@@ -67,8 +62,5 @@ namespace Ludo.ViewModels
                 };
             }
         }
-
-        [Display(Name = "بازی ها")]
-        public GameSelection Games { get; set; }
     }
 }

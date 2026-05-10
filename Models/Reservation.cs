@@ -12,12 +12,6 @@ namespace Ludo.Models
         public int Id { get; set; }
 
         [Required]
-        public int StationId{ get; set; }
-
-        [ForeignKey("StationId")]
-        public Station Station { get; set; }
-
-        [Required]
         public int ClientId { get; set; }
 
         [ForeignKey("ClientId")]
@@ -51,6 +45,10 @@ namespace Ludo.Models
 
         [InverseProperty("Reservation")]
         public virtual ICollection<ReservationGame> ReservationGames { get; set; }
+
+
+        [InverseProperty("Reservation")]
+        public virtual ICollection<ReservationStations> ReservationStations { get; set; }
 
     }
 }

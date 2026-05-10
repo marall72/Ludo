@@ -7,6 +7,22 @@
 <div class="text-center">
     <h3>خوش آمدید</h3>
 </div>
+
+<script>
+    var toastTrigger = document.getElementById('liveToastBtn');
+    var toastLiveExample = document.getElementById('liveToast');
+
+    if (toastTrigger) {
+      toastTrigger.addEventListener('click', function () {
+            var toast = new bootstrap.Toast(toastLiveExample, {
+      autohide: false
+    });
+        toast.show();
+      });
+    }
+</script>
+
+
 @if (user == null)
 {
     @using (Html.BeginForm("login", "home", FormMethod.Post, null))
@@ -32,7 +48,7 @@
 }
 
 @section Scripts {
-     @{
+    @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 

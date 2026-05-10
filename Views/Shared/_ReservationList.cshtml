@@ -1,0 +1,76 @@
+﻿@using Ludo.Business
+@using Ludo.ViewModels
+@model ReservationListViewModel
+
+<div id="reservationPartialUpdate">
+  
+
+
+
+    <div class="card">
+        <div class="card-body">
+            تعداد رزرو امروز: @Model.TodaysReservationCount
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>کد رزرو</th>
+                    <th>نام مشتری</th>
+                    <th>موبایل</th>
+                    <th>سیستم</th>
+                    <th>بازی ها</th>
+                    <th>از</th>
+                    <th>تا</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Reservations != null && Model.Reservations.Any())
+                {
+                    @foreach (var reservation in Model.Reservations)
+                    {
+                        <tr class="@HelperMethods.GetReservationStatusStyleClass(HelperMethods.GetReservationStatus(reservation.From, reservation.To))">
+                            <td>@reservation.Id</td>
+                            <td>@reservation.Client.Firstname @reservation.Client.Lastname</td>
+                            <td class="ltr">@reservation.Client.Mobile</td>
+                            <td class="ltr">
+                                <ol>
+                                    @foreach (var station in reservation.ReservationStations)
+                                    {
+                                        <li>@station.Station.Title</li>
+                                    }
+                                </ol>
+                            </td>
+                            <td class="ltr">@(reservation.ReservationGames == null || !reservation.ReservationGames.Any() ? "انتخاب نکرده" : string.Join(" | ", reservation.ReservationGames.Select(x => x.Game.Title)))</td>
+                            <td class="ltr">@HelperMethods.ConvertMiladiToShamsi(reservation.From, true)</td>
+                            <td class="ltr">@HelperMethods.ConvertMiladiToShamsi(reservation.To, true)</td>
+                            <td>@HelperMethods.GetReservationStatusTitle(HelperMethods.GetReservationStatus(reservation.From, reservation.To))</td>
+                            <td>
+                                <a href="@Url.Action("index", "home", new { id = reservation.Id })" class="btn btn-sm btn-primary me-1">
+                                    <i class="bi bi-pencil-square"></i> ویرایش
+                                </a>
+                                <button class="btn btn-sm btn-danger" onclick="confirmDelete('@reservation.Id')">
+                                    <i class="bi bi-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">هیچ رزروی یافت نشد.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.IsArchive)
+        {
+            @Html.Partial("_Paging", Model.Paging)
+        }
+    </div>
+</div>

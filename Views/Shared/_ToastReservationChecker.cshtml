@@ -1,0 +1,14 @@
+﻿@using Ludo.ViewModels
+@model ToastReservationCheckerViewModel
+
+<div id="allToastsWrapper">
+    <div class="toast-container position-fixed bottom-0 start-0 p-3">
+        @if (Model != null && Model.UpcomingReservations.Any())
+        {
+            @foreach (var reservation in Model.UpcomingReservations)
+            {
+                @Html.Partial("_Toast", reservation)
+            }
+        }
+    </div>
+</div>

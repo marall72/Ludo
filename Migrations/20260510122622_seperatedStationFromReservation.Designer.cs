@@ -4,6 +4,7 @@ using Ludo.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ludo.Migrations
 {
     [DbContext(typeof(LudoDbContext))]
-    partial class LudoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510122622_seperatedStationFromReservation")]
+    partial class seperatedStationFromReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,6 +165,9 @@ namespace Ludo.Migrations
                     b.Property<DateTime>("From")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("StationId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("To")
                         .HasColumnType("datetime2");
 
@@ -276,6 +282,29 @@ namespace Ludo.Migrations
                     b.HasIndex("UpdaterId");
 
                     b.ToTable("Station");
+                });
+
+            modelBuilder.Entity("Ludo.Models.StationGame", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("StationId");
+
+                    b.ToTable("StationGame");
                 });
 
             modelBuilder.Entity("Ludo.Models.User", b =>
@@ -501,11 +530,35 @@ namespace Ludo.Migrations
                     b.Navigation("Updater");
                 });
 
+            modelBuilder.Entity("Ludo.Models.StationGame", b =>
+                {
+                    b.HasOne("Ludo.Models.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ludo.Models.Station", "Station")
+                        .WithMany("StationGames")
+                        .HasForeignKey("StationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+
+                    b.Navigation("Station");
+                });
+
             modelBuilder.Entity("Ludo.Models.Reservation", b =>
                 {
                     b.Navigation("ReservationGames");
 
                     b.Navigation("ReservationStations");
+                });
+
+            modelBuilder.Entity("Ludo.Models.Station", b =>
+                {
+                    b.Navigation("StationGames");
                 });
 #pragma warning restore 612, 618
         }
