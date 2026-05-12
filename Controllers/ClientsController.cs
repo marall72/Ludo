@@ -111,7 +111,7 @@ namespace Ludo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    TempData["message"] = "مشتری با موفقیت بروزرسانی شد.";
+                    TempData["Result"] = "مشتری با موفقیت بروزرسانی شد.";
                 }
             }
             else
@@ -125,7 +125,7 @@ namespace Ludo.Controllers
                 if (ModelState.IsValid)
                 {
                     model = clientBusiness.Add(model, user.Id);
-                    TempData["message"] = "مشتری با موفقیت ایجاد شد.";
+                    TempData["Result"] = "مشتری با موفقیت ایجاد شد.";
                 }
             }
 
@@ -138,14 +138,14 @@ namespace Ludo.Controllers
         public IActionResult Delete(int id)
         {
             var user = HttpContext.Items["User"] as User;
-            clientBusiness.Delete(id, user.Id, out bool isUsed);
+            var deleted = clientBusiness.Delete(id, user.Id, out bool isUsed);
             if (isUsed)
                 TempData["Error"] = "به علت وجود رزرو امکان حذف این مشتری وجود ندارد.";
             else
             {
                 TempData["Result"] = "مشتری با موفقیت حذف شد.";
             }
-            if (Request.Headers.Referer[0].EndsWith("/clients"))
+            if (Request.Headers.Referer[0].EndsWith("/clients") || deleted)
             {
                 return RedirectToAction("index");
             }

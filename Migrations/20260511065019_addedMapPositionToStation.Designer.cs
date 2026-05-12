@@ -4,6 +4,7 @@ using Ludo.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ludo.Migrations
 {
     [DbContext(typeof(LudoDbContext))]
-    partial class LudoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511065019_addedMapPositionToStation")]
+    partial class addedMapPositionToStation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -250,10 +253,10 @@ namespace Ludo.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MapLeftPosition")
-                        .HasColumnType("decimal(18,10)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MapTopPosition")
-                        .HasColumnType("decimal(18,10)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PlayerCount")
                         .HasColumnType("int");
@@ -478,7 +481,7 @@ namespace Ludo.Migrations
                         .IsRequired();
 
                     b.HasOne("Ludo.Models.Station", "Station")
-                        .WithMany("ReservationStations")
+                        .WithMany()
                         .HasForeignKey("StationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -511,11 +514,6 @@ namespace Ludo.Migrations
                 {
                     b.Navigation("ReservationGames");
 
-                    b.Navigation("ReservationStations");
-                });
-
-            modelBuilder.Entity("Ludo.Models.Station", b =>
-                {
                     b.Navigation("ReservationStations");
                 });
 #pragma warning restore 612, 618

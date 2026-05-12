@@ -52,7 +52,7 @@ namespace Ludo.Controllers
                 }
                 else
                 {
-                    TempData["message"] = "رزرو با موفقیت بروزرسانی شد.";
+                    TempData["Result"] = "رزرو با موفقیت بروزرسانی شد.";
                 }
             }
             else
@@ -76,7 +76,7 @@ namespace Ludo.Controllers
                 }
                 else
                 {
-                    TempData["message"] = "رزرو با موفقیت ثبت شد.";
+                    TempData["Result"] = "رزرو با موفقیت ثبت شد.";
                 }
             }
 

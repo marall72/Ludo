@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Ludo.Models;
+using System.Globalization;
 
 namespace Ludo.Business
 {
@@ -104,6 +105,20 @@ namespace Ludo.Business
             }
 
             return className;
+        }
+
+        public static string GetStationClass(Station model)
+        {
+            if (!model.IsActive)
+            {
+                return "resizable-disabled";
+            }
+            else if(model.ReservationStations != null && model.ReservationStations.Any())
+            {
+                return "resizable-full";
+            }
+
+            return "resizable-available";
         }
     }
 }

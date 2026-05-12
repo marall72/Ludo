@@ -22,5 +22,6 @@ namespace Ludo.Models
 
         [ForeignKey("StationId")]
         public Station Station { get; set; }
+
     }
 }

@@ -53,7 +53,6 @@ namespace Ludo.Controllers
         [Route("users/new/{id:int}")]
         public IActionResult New(int id)
         {
-            ViewBag.Result = TempData["message"] as string;
             var user = userBusiness.GetById(id);
             var model = new EditUser();
             if (user != null)
@@ -106,13 +105,13 @@ namespace Ludo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    TempData["message"] = "کاربر با موفقیت بروزرسانی شد.";
+                    TempData["Result"] = "کاربر با موفقیت بروزرسانی شد.";
                 }
             }
             else
             {
                 userBusiness.Add(model, currentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken);
-                TempData["message"] = "کاربر با موفقیت ایجاد شد.";
+                TempData["Result"] = "کاربر با موفقیت ایجاد شد.";
 
                 if (usernameTaken)
                 {
@@ -152,7 +151,7 @@ namespace Ludo.Controllers
                 TempData["Result"] = "کاربر با موفقیت حذف شد.";
             }
 
-            if (Request.Headers.Referer[0].EndsWith("/users"))
+            if (Request.Headers.Referer[0].EndsWith("/users") || deleted)
             {
                 return RedirectToAction("index");
             }

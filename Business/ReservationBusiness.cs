@@ -257,9 +257,9 @@ namespace Ludo.Business
             return dbContext.Reservations.FirstOrDefault(x => x.ClientId == clientId);
         }
 
-        public Station StationHasReservation(int stationId)
+        public bool StationHasReservation(int stationId)
         {
-            return dbContext.Stations.FirstOrDefault(x => x.Id == stationId);
+            return dbContext.ReservationStations.Any(x => x.StationId == stationId);
         }
     }
 }

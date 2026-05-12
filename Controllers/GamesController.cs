@@ -111,7 +111,7 @@ namespace Ludo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    TempData["message"] = "بازی با موفقیت بروزرسانی شد.";
+                    TempData["Result"] = "بازی با موفقیت بروزرسانی شد.";
                 }
             }
             else
@@ -124,7 +124,7 @@ namespace Ludo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    TempData["message"] = "بازی با موفقیت ایجاد شد.";
+                    TempData["Result"] = "بازی با موفقیت ایجاد شد.";
                 }
             }
 
@@ -138,12 +138,12 @@ namespace Ludo.Controllers
         public IActionResult Delete(int id)
         {
             var user = HttpContext.Items["User"] as User;
-            gameBusiness.Delete(id, user.Id, out bool isUsed);
+            var deleted = gameBusiness.Delete(id, user.Id, out bool isUsed);
             if (isUsed)
             {
                 TempData["Error"] = "به علت استفاده از این بازی در رزرو، امکان حذف آن وجود ندارد. میتوانید بازی را غیرفعال کنید.";
             }
-            if (Request.Headers.Referer[0].EndsWith("/games"))
+            if (Request.Headers.Referer[0].EndsWith("/games") || deleted)
             {
                 return RedirectToAction("index");
             }

@@ -62,5 +62,13 @@ namespace Ludo.Models
         [ForeignKey("UpdaterId")]
         public User Updater { get; set; }
 
+        [Column(TypeName = "decimal(18,10)")]
+        public decimal MapTopPosition { get; set; }
+        [Column(TypeName = "decimal(18,10)")]
+        public decimal MapLeftPosition { get; set; }
+
+        [InverseProperty("Station")]
+        public virtual ICollection<ReservationStations> ReservationStations { get; set; }
+
     }
 }

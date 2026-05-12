@@ -93,3 +93,33 @@ body {
 .toast-header{
     justify-content: space-between;
 }
+
+.resizable {
+    width: fit-content;
+    min-height: 6.5em;
+    color: white;
+    border-radius: 0.75em;
+    padding: 4%;
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
+    user-select: none;
+}
+
+.resizable-available {
+    background-color: #1f8657;
+}
+
+.resizable-full {
+    background-color: #dc3545;
+}
+
+.resizable-disabled {
+    background: #706f6f;
+}
+
+.mapArea {
+    border: black 1px solid;
+    padding: 10px;
+    height: 1000px;
+    border-radius: 10px;
+}

@@ -36,6 +36,7 @@ namespace Ludo.Controllers
         public IActionResult Index(int? id)
         {
             //todo: change alerts to modals
+            //todo: to safhe gozaresh ziad mimunim varmidare update mikone faqat 3 taie akharo miare
             //TODO: age login parid tuie hamin ajax updateha bendaze birun
             var model = new LoginViewModel();
             var clients = clientBusiness.GetClients(null, 1, 0, out int clientTotalItemCount);
@@ -157,7 +158,7 @@ namespace Ludo.Controllers
         {
             var model = new ToastReservationCheckerViewModel();
 
-            var reservations = reservationBusiness.GetUpcomingReservations(15);
+            var reservations = reservationBusiness.GetUpcomingReservations(45);
             model.UpcomingReservations = reservations.Select(x => new ToastViewModel
             {
                 Header = "مشتری تو راهه!",
