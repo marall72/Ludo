@@ -122,25 +122,52 @@ namespace Ludo.Business
             return dbContext.Stations.Where(x => isActive == null || x.IsActive == isActive).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public List<Station> GetStationsMap()
+        public List<Station> GetStationsMap(bool? isActive, DateTime fromDate, DateTime toDate)
         {
-            var now = DateTime.Now;
-            var result = (
-                    from s in dbContext.Stations
+            var final = new List<Station>();
+            List<TempMapStation> result;
+
+            dbContext.ChangeTracker.LazyLoadingEnabled = false;
+            result = (
+                    from s in dbContext.Stations.Where(x => x.IsActive == isActive || isActive == null)
                     from rs in s.ReservationStations
-                        .Where(rs => (rs.Reservation.From <= now && rs.Reservation.To >= now) || rs == null)
+                        .Where(rs => ((rs.Reservation.From >= fromDate && rs.Reservation.From <= toDate)
+                        || (rs.Reservation.To >= fromDate && rs.Reservation.To <= toDate)) || rs == null
+                        || (rs.Reservation.From <= fromDate && rs.Reservation.To >= toDate)
+                        )
                         .DefaultIfEmpty()
-                    select new
+                    select new TempMapStation
                     {
-                        station = s,
-                        reservationStation = rs,
-                        reservation = rs.Reservation
+                        Station = s,
+                        ReservationStations = rs,
+                        Reservations = rs.Reservation
                     }
                 ).ToList();
 
-            var final = new List<Station>();
-            final = result.Select(x => x.station).ToList();
-           
+            final = result.Select(x => x.Station).ToList();
+            final.ForEach(station =>
+            {
+                station.ReservationStations = result.Where(x => x.Station.Id == station.Id && x.ReservationStations != null).Select(x => x.ReservationStations).ToList();
+                if (station.ReservationStations != null)
+                {
+                    foreach (var rs in station.ReservationStations)
+                    {
+                        var temp = result.FirstOrDefault(x => x.ReservationStations != null && x.ReservationStations.StationId == rs.StationId);
+                        if (temp != null)
+                        {
+                            var temp2 = result.FirstOrDefault(x => x.ReservationStations != null && x.ReservationStations.StationId == rs.StationId);
+                            if (temp2 != null)
+                            {
+                                rs.Station = temp2.Station;
+                            }
+                        }
+                    }
+                    ;
+                }
+            });
+
+
+            //dbContext.ChangeTracker.LazyLoadingEnabled = true;
             return final;
         }
 
@@ -181,9 +208,10 @@ namespace Ludo.Business
             foreach (var item in model)
             {
                 var station = dbContext.Stations.FirstOrDefault(x => x.Id == item.StationId);
-                if (station != null) {
-                    station.MapTopPosition = item.Top;
-                    station.MapLeftPosition = item.Left;
+                if (station != null)
+                {
+                    station.X = item.X;
+                    station.Y = item.Y;
                 }
             }
 
@@ -200,6 +228,13 @@ namespace Ludo.Business
                 LogType = LogType.EditStation,
                 UserId = currentUserId
             });
+        }
+
+        private class TempMapStation
+        {
+            public Station Station { get; set; }
+            public ReservationStations ReservationStations { get; set; }
+            public Reservation Reservations { get; set; }
         }
     }
 }

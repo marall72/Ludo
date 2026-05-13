@@ -4,6 +4,7 @@ using Ludo.Database;
 using Ludo.Models;
 using Ludo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using System.Net;
 
 namespace Ludo.Controllers
@@ -146,9 +147,18 @@ namespace Ludo.Controllers
         public IActionResult MapEdit()
         {
             var model = new MapEditViewModel();
-            model.Stations = stationBusiness.GetStationsMap();
+            model.Stations = stationBusiness.GetStationsMap(null, DateTime.Now, DateTime.Now.AddHours(1));
             model.IsEdit = true;
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateMap([FromBody] UpdateMapViewModel model)
+        {
+            var result = new MapEditViewModel();
+            result.Stations = stationBusiness.GetStationsMap(null, HelperMethods.ConvertShamsiToMiladi(model.DateFrom, model.TimeFrom), HelperMethods.ConvertShamsiToMiladi(model.DateTo, model.TimeTo));
+
+            return PartialView("_JustMap", result);
         }
 
         [HttpPost]

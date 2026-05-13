@@ -17,6 +17,19 @@
     }, 60000);
 
     SetClock();
+
+    SetMapSelection();
+
+    if (registerDraggable == true)
+        interact('.resizable')
+            .draggable({
+                onmove: window.dragMoveListener,
+                modifiers: [
+                    interact.modifiers.restrict({
+                        restriction: 'parent'
+                    })
+                ]
+            });
 });
 
 function ReservationPartialUpdate() {
@@ -83,3 +96,8 @@ function SetClock() {
 
     digClock();
 }
+
+$(document).ready(function () {
+    SetStationsPosition();
+});
+

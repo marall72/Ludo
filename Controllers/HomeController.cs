@@ -8,6 +8,7 @@ using Ludo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -38,9 +39,12 @@ namespace Ludo.Controllers
             //todo: change alerts to modals
             //todo: to safhe gozaresh ziad mimunim varmidare update mikone faqat 3 taie akharo miare
             //TODO: age login parid tuie hamin ajax updateha bendaze birun
+            //TODO: map ham baiad update beshe ru interval
+            //TODO: teste inke age mapo update nakarde bud reserve por shode bud save nashe va reacte monaseb begirim
             var model = new LoginViewModel();
             var clients = clientBusiness.GetClients(null, 1, 0, out int clientTotalItemCount);
             var stations = stationBusiness.GetStations(true, 1, 10000, out int stationsTotalItemCount);
+
             model.Reservations = new ReservationListViewModel
             {
                 Reservations = reservationBusiness.GetReservations(null, false, 1, 10000, out int totalItemCount),
@@ -58,6 +62,12 @@ namespace Ludo.Controllers
                         Value = x.Id.ToString()
                     }).ToList()
                 }
+            };
+
+            model.MapEdit = new MapEditViewModel
+            {
+                Stations = stationBusiness.GetStationsMap(true, DateTime.Now, DateTime.Now.AddHours(1)),
+                MapReservation = model.Reservations.NewReservation
             };
 
             model.Reservations.NewReservation.Clients.Insert(0, new SelectListItem

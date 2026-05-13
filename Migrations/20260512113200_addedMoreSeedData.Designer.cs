@@ -4,6 +4,7 @@ using Ludo.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ludo.Migrations
 {
     [DbContext(typeof(LudoDbContext))]
-    partial class LudoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512113200_addedMoreSeedData")]
+    partial class addedMoreSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,6 +252,12 @@ namespace Ludo.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<decimal>("MapLeftPosition")
+                        .HasColumnType("decimal(18,10)");
+
+                    b.Property<decimal>("MapTopPosition")
+                        .HasColumnType("decimal(18,10)");
+
                     b.Property<int>("PlayerCount")
                         .HasColumnType("int");
 
@@ -269,12 +278,6 @@ namespace Ludo.Migrations
                     b.Property<int>("UpdaterId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("X")
-                        .HasColumnType("decimal(18,10)");
-
-                    b.Property<decimal>("Y")
-                        .HasColumnType("decimal(18,10)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
@@ -290,14 +293,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R1",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -305,14 +308,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R2",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -320,14 +323,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R3",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -335,14 +338,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R4",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -350,14 +353,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R5",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -365,14 +368,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R6",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -380,14 +383,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R7",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -395,14 +398,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R8",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -410,14 +413,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R9",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -425,14 +428,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 0,
                             StationType = 0,
                             Title = "R10",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -440,14 +443,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U1",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -455,14 +458,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U2",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -470,14 +473,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U3",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -485,14 +488,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U4",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -500,14 +503,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U5",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -515,14 +518,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
                             StationLevel = 2,
                             StationType = 0,
                             Title = "U6",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -530,14 +533,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
-                            StationLevel = 3,
+                            StationLevel = 2,
                             StationType = 0,
                             Title = "PR7",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -545,14 +548,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
-                            StationLevel = 3,
+                            StationLevel = 2,
                             StationType = 0,
                             Title = "PR8",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -560,14 +563,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
-                            StationLevel = 3,
+                            StationLevel = 2,
                             StationType = 0,
                             Title = "PR9",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         },
                         new
                         {
@@ -575,59 +578,14 @@ namespace Ludo.Migrations
                             CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatorId = 1,
                             IsActive = true,
+                            MapLeftPosition = 0m,
+                            MapTopPosition = 0m,
                             PlayerCount = 1,
-                            StationLevel = 3,
+                            StationLevel = 2,
                             StationType = 0,
                             Title = "PR10",
                             UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatorId = 1,
-                            IsActive = true,
-                            PlayerCount = 1,
-                            StationLevel = 1,
-                            StationType = 0,
-                            Title = "ARC1",
-                            UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatorId = 1,
-                            IsActive = true,
-                            PlayerCount = 1,
-                            StationLevel = 1,
-                            StationType = 0,
-                            Title = "ARC2",
-                            UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CreateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatorId = 1,
-                            IsActive = true,
-                            PlayerCount = 1,
-                            StationLevel = 1,
-                            StationType = 0,
-                            Title = "ARC3",
-                            UpdateDate = new DateTime(2026, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            UpdaterId = 1,
-                            X = 0m,
-                            Y = 0m
+                            UpdaterId = 1
                         });
                 });
 

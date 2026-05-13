@@ -1,54 +1,15 @@
-﻿@using Ludo.Business
-
-@model Ludo.ViewModels.MapEditViewModel
-
-<script src="~/js/interact.min.js"></script>
-<script src="~/js/MapEdit.js"></script>
+﻿@model Ludo.ViewModels.MapEditViewModel
 
 @{
     ViewData["Title"] = "نقشه سیستم ها";
 }
 
 <h4 class="mb-4">@ViewData["Title"]</h4>
-@if (Model.IsEdit)
-{
-    <button class="btn btn-primary" onclick="SaveMapCoordinates()">ذخیره</button>
+
+@Html.Partial("_MapSelector", Model)
+
+@section Scripts {
+    <script>
+        var registerDraggable = true;
+    </script>
 }
-<div class="container mt-4 mapArea">
-
-    @if (Model.Stations != null)
-    {
-        @foreach (var station in Model.Stations)
-        {
-            <div data-x="0" data-y="0" class="resizable @HelperMethods.GetStationClass(station)" stationId="@station.Id">
-                @station.Title
-                @if (station.ReservationStations != null && station.ReservationStations.Any())
-                {
-                    <div>
-                        <small>
-                            تا ساعت @station.ReservationStations.First().Reservation.To.ToString("HH:mm") پر است
-                        </small>
-                    </div>
-                }
-                @if (!station.IsActive)
-                {
-                    <div>
-                        <small>
-                            غیرفعال
-                        </small>
-                    </div>
-                }
-
-                @if (station.IsActive && (station.ReservationStations == null || !station.ReservationStations.Any()))
-                {
-                    <div>
-                        <small>
-                            فعال
-                        </small>
-                    </div>
-                }
-            </div>
-        }
-    }
-
-</div>

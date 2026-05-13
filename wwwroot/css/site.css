@@ -95,14 +95,19 @@ body {
 }
 
 .resizable {
-    width: fit-content;
-    min-height: 6.5em;
     color: white;
     border-radius: 0.75em;
-    padding: 4%;
+    padding: 10px;
     -webkit-transform: translate(0px, 0px);
     transform: translate(0px, 0px);
     user-select: none;
+    width: 160px;
+    height: 100px;
+    align-content: center;
+    text-align: center;
+    border: solid 2px #00000063;
+    box-shadow: 1px 2px 6px grey;
+    position: relative;
 }
 
 .resizable-available {
@@ -113,13 +118,55 @@ body {
     background-color: #dc3545;
 }
 
-.resizable-disabled {
-    background: #706f6f;
-}
+    .resizable-full, .resizable-disabled, .resizable-coming {
+        cursor: not-allowed;
+    }
+
+    .resizable-disabled {
+        background: #706f6f;
+    }
 
 .mapArea {
     border: black 1px solid;
     padding: 10px;
     height: 1000px;
     border-radius: 10px;
+}
+
+
+.resize-shadow {
+    background: #ffffffd6;
+    color: #323232;
+    cursor: pointer;
+    border-radius: 0.75em;
+    padding: 10px;
+    width: 160px;
+    height: 100px;
+    align-content: center;
+    text-align: center;
+    border: solid 2px #00000063;
+    box-shadow: 1px 2px 6px grey;
+    position: absolute;
+    inset: 0;
+    font-weight: bold;
+    font-size: 20px;
+    display: none;
+    top: -2px;
+    right: -2px;
+}
+
+.resizable-selected {
+    box-shadow: #863cc7 1px 2px 6px;
+    background: #1200ffe8;
+}
+
+
+.resizable-deselect {
+    color: white;
+    background: #9f1717d9;
+}
+
+.resizable-coming {
+    background: #edff00;
+    color: black;
 }

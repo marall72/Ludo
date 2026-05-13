@@ -13,5 +13,6 @@ namespace Ludo.ViewModels
         public string Password { get; set; }
 
         public ReservationListViewModel Reservations { get; set; }
+        public MapEditViewModel MapEdit { get; set; }
     }
 }

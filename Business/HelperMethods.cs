@@ -23,7 +23,7 @@ namespace Ludo.Business
                 hour = Convert.ToInt32(timeParts[0]);
                 minute = Convert.ToInt32(timeParts[1]);
             }
-            
+
             PersianCalendar pc = new PersianCalendar();
             DateTime gregorianDate = pc.ToDateTime(year, month, day, hour, minute, 0, 0);
 
@@ -34,7 +34,7 @@ namespace Ludo.Business
         {
             var pc = new PersianCalendar();
 
-            return $"{pc.GetYear(date):0000}/{pc.GetMonth(date):00}/{pc.GetDayOfMonth(date):00} {(showTime? date.ToShortTimeString() : "")}";
+            return $"{pc.GetYear(date):0000}/{pc.GetMonth(date):00}/{pc.GetDayOfMonth(date):00} {(showTime ? date.ToShortTimeString() : "")}";
         }
 
 
@@ -113,8 +113,13 @@ namespace Ludo.Business
             {
                 return "resizable-disabled";
             }
-            else if(model.ReservationStations != null && model.ReservationStations.Any())
+            else if (model.ReservationStations != null && model.ReservationStations.Any())
             {
+                if(model.ReservationStations.First().Reservation.From > DateTime.Now)
+                {
+                    return "resizable-coming";
+                }
+
                 return "resizable-full";
             }
 

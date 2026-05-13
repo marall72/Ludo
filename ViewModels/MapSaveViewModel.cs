@@ -3,7 +3,7 @@
     public class MapSaveViewModel
     {
         public int StationId { get; set; }
-        public decimal Top { get; set; }
-        public decimal Left { get; set; }
+        public decimal X { get; set; }
+        public decimal Y { get; set; }
     }
 }

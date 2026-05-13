@@ -1,13 +1,13 @@
-﻿@if (ViewBag.Error != null)
-{
-    <div class="text-danger mb-3">
-        @ViewBag.Error
-    </div>
+﻿@{
+    var errorDisplay = ViewBag.Error != null ? "block" : "none";
+    var resultDisplay = ViewBag.Result != null ? "block" : "none";
 }
 
-@if (ViewBag.Result != null)
-{
-    <div class="alert alert-success alert-dismissible">
-        @ViewBag.Result
-    </div>
-}
+<div id="dangerResult" class="alert alert-danger alert-dismissible" style="display:@errorDisplay;">
+    @ViewBag.Error
+</div>
+
+
+<div id="successResult" class="alert alert-success alert-dismissible" style="display:@resultDisplay;">
+    @ViewBag.Result
+</div>

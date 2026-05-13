@@ -6,6 +6,7 @@ using Ludo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.IO.Compression;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static System.Collections.Specialized.BitVector32;
@@ -144,6 +145,37 @@ namespace Ludo.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult SaveMapReservation([FromBody]MapReservationSaveViewModel model)
+        {
+            var user = HttpContext.Items["User"] as User;
+
+            reservationBusiness.Add(new EditReservation
+            {
+                ClientId = model.ClientId,
+                FromDate = model.DateFrom,
+                FromTime = model.TimeFrom,
+                ToDate = model.DateTo,
+                Games = new GameSelection
+                {
+                    SelectedGamesIds = model.GameIds
+                },
+                StationIds = model.StationIds,
+                ToTime = model.TimeTo
+            }, user.Id, out bool crash, out bool invalidDate);
+            if (crash)
+            {
+                return StatusCode(500);
+            }
+            else if (invalidDate)
+            {
+                return StatusCode(500);
+            }
+        
+
+            return Ok();
         }
     }
 }

@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<LudoDbContext>(options =>
+ 
 {
     //don't do this if not in development
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))

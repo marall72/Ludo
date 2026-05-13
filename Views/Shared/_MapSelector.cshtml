@@ -1,0 +1,116 @@
+﻿@using Ludo.Business
+
+@model Ludo.ViewModels.MapEditViewModel
+
+<script src="~/js/interact.min.js"></script>
+<script src="~/js/MapEdit.js"></script>
+
+<div>
+    @if (Model.IsEdit)
+    {
+
+        <a href="@Url.Action("index", "stations")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> فهرست سیستم ها
+        </a>
+        <button class="btn btn-primary" onclick="SaveMapCoordinates()">ذخیره</button>
+    }
+    else
+    {
+
+        <div class="card">
+            <div class="card-header">
+                اطلاعات رزرو
+            </div>
+            <div class="card-body">
+                <div class="form-floating mb-3 row">
+                    <div class="col-md-4">
+                        @Html.DropDownListFor(model => model.MapReservation.ClientId, Model.MapReservation.Clients, new { @class = "form-select select2 rtl ", id= "mapReservationClientId"})
+                        @Html.LabelFor(model => model.MapReservation.ClientId)
+                        <span asp-validation-for="MapReservation.ClientId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(m => m.MapReservation.FromDate, new { htmlAttributes = new { @class = "form-control persianDatePicker", id = "mapReservationDateFrom" } })
+                        @Html.LabelFor(model => model.MapReservation.FromDate)
+                    </div>
+                    <div class="col-md-2" style="margin-left: 0; padding-left: 0;">
+                        @Html.TextBoxFor(m => m.MapReservation.FromTime, new { @class = "form-control", type = "time", id = "mapReservationTimeFrom" })
+                    </div>
+                    <div class="col-md-2">
+                        @Html.EditorFor(model => model.MapReservation.ToDate, new { htmlAttributes = new { @class = "form-control persianDatePicker", id = "mapReservationDateTo" } })
+                        @Html.LabelFor(model => model.MapReservation.ToDate)
+                    </div>
+                    <div class="col-md-2" style="margin-left: 0; padding-left: 0;">
+                        @Html.TextBoxFor(m => m.MapReservation.ToTime, new { @class = "form-control", type = "time", id = "mapReservationTimeTo" })
+                    </div>
+                </div>
+                <div class="form-floating mb-3 row">
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.MapReservation.Games, "_Games")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="SaveReservation()">ذخیره رزرو</button>
+
+
+        <div class="card">
+            <div class="card-header">
+                تغییر بازه زمانی نقشه
+            </div>
+            <div class="card-body">
+                <div class="form-floating mb-3 row">
+                    <div class="col-md-3">
+                        <input class="form-control persianDatePicker" id="mapDateFrom" value="@HelperMethods.ConvertMiladiToShamsi(DateTime.Now, false)" />
+                        <label for="mapDateFrom">تاریخ از</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="form-control" id="mapTimeFrom" type="time" value="@DateTime.Now.ToString("HH:mm")" />
+                    </div>
+                    <div class="col-md-3">
+                        <input class="form-control persianDatePicker" id="mapDateTo" value="@HelperMethods.ConvertMiladiToShamsi(DateTime.Now.AddHours(1), false)" />
+                        <label for="mapDateTo">تاریخ از</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="form-control" id="mapTimeTo" type="time" value="@DateTime.Now.AddHours(1).ToString("HH:mm")"  />
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="UpdateMap()">بررسی رزرو نقشه</button>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="container mt-4 mapArea">
+
+    @Html.Partial("_JustMap", Model)
+
+</div>
+
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast bg-success text-bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="mapUpdateToast">
+        <div class="toast-header">
+            <div>
+                <strong class="me-auto">نتیجه</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            نقشه با موفقیت بروزرسانی شد.
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast bg-danger text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="mapErrorToast">
+        <div class="toast-header">
+            <div>
+                <strong class="me-auto">نتیجه</strong>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            خطا
+        </div>
+    </div>
+</div>
