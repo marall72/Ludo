@@ -14,10 +14,10 @@ using static System.Collections.Specialized.BitVector32;
 namespace Ludo.Controllers
 {
     [LudoAuthorization]
-    public class ReservationsController : Controller
+    public class ReservationsController : BaseController
     {
         private ReservationBusiness reservationBusiness { get; set; }
-        public ReservationsController(LudoDbContext db)
+        public ReservationsController(LudoDbContext db) : base(db)
         {
             reservationBusiness = new ReservationBusiness(db);
         }
@@ -26,104 +26,142 @@ namespace Ludo.Controllers
         [Route("reservations/new/{id:int?}")]
         public IActionResult New(ReservationListViewModel model)
         {
-            var user = HttpContext.Items["User"] as User;
-            var state = ModelState;
-            if (model.NewReservation.Id > 0)
+            try
             {
-                var reservation = reservationBusiness.Update(model.NewReservation, user.Id, out bool crash, out bool invalidDate);
-                if (reservation == null)
+                var state = ModelState;
+                if (model.NewReservation.Id > 0)
                 {
-                    //we do what?
-                }
-                if (crash)
-                {
-                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                    var reservation = reservationBusiness.Update(model.NewReservation, CurrentUser.Id, out bool crash, out bool invalidDate);
+                    if (reservation == null)
                     {
-                        IsError = true,
-                        Message = "تداخل در ثبت رزرو"
-                    });
-                }
-                else if (invalidDate)
-                {
-                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                        //we do what?
+                    }
+                    if (crash)
                     {
-                        IsError = true,
-                        Message = "تاریخ و ساعت نامعتبر"
-                    }); 
+                        TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                        {
+                            IsError = true,
+                            Message = "تداخل در ثبت رزرو"
+                        });
+                    }
+                    else if (invalidDate)
+                    {
+                        TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                        {
+                            IsError = true,
+                            Message = "تاریخ و ساعت نامعتبر"
+                        });
+                    }
+                    else
+                    {
+                        TempData["Result"] = "رزرو با موفقیت بروزرسانی شد.";
+                    }
                 }
                 else
                 {
-                    TempData["Result"] = "رزرو با موفقیت بروزرسانی شد.";
+                    reservationBusiness.Add(model.NewReservation, CurrentUser.Id, out bool crash, out bool invalidDate);
+                    if (crash)
+                    {
+                        TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                        {
+                            IsError = true,
+                            Message = "تداخل در ثبت رزرو"
+                        });
+                    }
+                    else if (invalidDate)
+                    {
+                        TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
+                        {
+                            IsError = true,
+                            Message = "تاریخ و ساعت نامعتبر"
+                        });
+                    }
+                    else
+                    {
+                        TempData["Result"] = "رزرو با موفقیت ثبت شد.";
+                    }
                 }
+
+                if (TempData["error"] == null || model.NewReservation.Id == 0)
+                    return RedirectToAction("index", "home");
             }
-            else
+            catch (Exception ex)
             {
-                reservationBusiness.Add(model.NewReservation, user.Id, out bool crash, out bool invalidDate);
-                if (crash)
+                logBusiness.Add(new Log
                 {
-                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
-                    {
-                        IsError = true,
-                        Message = "تداخل در ثبت رزرو"
-                    });
-                }
-                else if (invalidDate)
-                {
-                    TempData["ModalResult"] = JsonSerializer.Serialize(new ModalResult
-                    {
-                        IsError = true,
-                        Message = "تاریخ و ساعت نامعتبر"
-                    });
-                }
-                else
-                {
-                    TempData["Result"] = "رزرو با موفقیت ثبت شد.";
-                }
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
             }
 
-            if (TempData["error"] == null || model.NewReservation.Id == 0)
-                return RedirectToAction("index", "home");
-
-            return RedirectToAction("index", "home", new {id = model.NewReservation.Id});
+            return RedirectToAction("index", "home", new { id = model.NewReservation.Id });
         }
 
         public IActionResult Delete(int id)
         {
-            var user = HttpContext.Items["User"] as User;
-            reservationBusiness.Delete(id, user.Id);
-            TempData["Result"] = "رزرو با موفقیت حذف شد.";
-            if (Request.Headers.Referer[0].EndsWith("/reservations"))
+            try
             {
-                return RedirectToAction("index");
+                reservationBusiness.Delete(id, CurrentUser.Id);
+                TempData["Result"] = "رزرو با موفقیت حذف شد.";
+                if (Request.Headers.Referer[0].EndsWith("/reservations"))
+                {
+                    return RedirectToAction("index");
+                }
             }
-
+            catch (Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+           
             return Redirect("/home");
         }
 
-        public IActionResult Index(int page = 1) {
+        public IActionResult Index(int page = 1)
+        {
             if (page <= 0)
             {
                 return RedirectToAction("index", new { page = 1 });
             }
-
-            var model = new ReservationListViewModel
+            var model = new ReservationListViewModel();
+            try
             {
-                Reservations = reservationBusiness.GetReservations(null, true, page, PagingViewModel.PageSize, out int totalItemCount),
-                IsArchive = true,
-                TodaysReservationCount = reservationBusiness.GetTodaysReservationCount()
-            };
+                model = new ReservationListViewModel
+                {
+                    Reservations = reservationBusiness.GetReservations(null, true, page, PagingViewModel.PageSize, out int totalItemCount),
+                    IsArchive = true,
+                    TodaysReservationCount = reservationBusiness.GetTodaysReservationCount()
+                };
 
-            model.Paging = new PagingViewModel
+                model.Paging = new PagingViewModel
+                {
+                    Action = "index",
+                    Controller = "reservations",
+                    CurrentPage = page,
+                    PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                    TotalCount = totalItemCount
+                };
+
+                if (page > model.Paging.PageCount)
+                    return RedirectToAction("index", new { page = 1 });
+            }
+            catch(Exception ex)
             {
-                Action = "index",
-                Controller = "reservations",
-                CurrentPage = page,
-                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
-                TotalCount = totalItemCount
-            };
-
-            if (page > model.Paging.PageCount)
-                return RedirectToAction("index", new { page = 1 });
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
 
             return View(model);
         }
@@ -131,51 +169,126 @@ namespace Ludo.Controllers
         [HttpPost]
         public IActionResult Index(ReservationListViewModel model)
         {
-            model.Reservations = reservationBusiness.GetReservations(model.SearchText, true, 1, PagingViewModel.PageSize, out int totalItemCount);
-            model.IsArchive = true;
-            model.TodaysReservationCount = reservationBusiness.GetTodaysReservationCount();
-            
-            model.Paging = new PagingViewModel
+            try
             {
-                Action = "index",
-                Controller = "reservations",
-                CurrentPage = 1,
-                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
-                TotalCount = totalItemCount
-            };
+                model.Reservations = reservationBusiness.GetReservations(model.SearchText, true, 1, PagingViewModel.PageSize, out int totalItemCount);
+                model.IsArchive = true;
+                model.TodaysReservationCount = reservationBusiness.GetTodaysReservationCount();
 
+                model.Paging = new PagingViewModel
+                {
+                    Action = "index",
+                    Controller = "reservations",
+                    CurrentPage = 1,
+                    PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                    TotalCount = totalItemCount
+                };
+            }
+            catch (Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult SaveMapReservation([FromBody]MapReservationSaveViewModel model)
+        public IActionResult SaveMapReservation([FromBody] MapReservationSaveViewModel model)
         {
-            var user = HttpContext.Items["User"] as User;
-
-            reservationBusiness.Add(new EditReservation
+            try
             {
-                ClientId = model.ClientId,
-                FromDate = model.DateFrom,
-                FromTime = model.TimeFrom,
-                ToDate = model.DateTo,
-                Games = new GameSelection
+                reservationBusiness.Add(new EditReservation
                 {
-                    SelectedGamesIds = model.GameIds
-                },
-                StationIds = model.StationIds,
-                ToTime = model.TimeTo
-            }, user.Id, out bool crash, out bool invalidDate);
-            if (crash)
-            {
-                return StatusCode(500);
+                    ClientId = model.ClientId,
+                    FromDate = model.DateFrom,
+                    FromTime = model.TimeFrom,
+                    ToDate = model.DateTo,
+                    Games = new GameSelection
+                    {
+                        SelectedGamesIds = model.GameIds
+                    },
+                    StationIds = model.StationIds,
+                    ToTime = model.TimeTo
+                }, CurrentUser.Id, out bool crash, out bool invalidDate);
+                if (crash)
+                {
+                    return StatusCode((int)HttpStatusCode.Conflict);
+                }
+                else if (invalidDate)
+                {
+                    return StatusCode(500);
+                }
             }
-            else if (invalidDate)
+            catch(Exception ex)
             {
-                return StatusCode(500);
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
             }
-        
-
+            
             return Ok();
+        }
+
+        public IActionResult ReservationUpdateInterval(string q)
+        {
+            var model = new ReservationListViewModel();
+            try
+            {
+                model = new ReservationListViewModel
+                {
+                    Reservations = reservationBusiness.GetReservations(q, false, 1, 10000, out int totalItemCount),
+                    TodaysReservationCount = reservationBusiness.GetTodaysReservationCount()
+                };
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+           
+            return PartialView("_ReservationList", model);
+        }
+
+        public IActionResult GetUpcomingReservationsToasts()
+        {
+            var model = new ToastReservationCheckerViewModel();
+            try
+            {
+                var reservations = reservationBusiness.GetUpcomingReservations(45);
+                model.UpcomingReservations = reservations.Select(x => new ToastViewModel
+                {
+                    Header = "مشتری تو راهه!",
+                    Message = $"{x.Client.Firstname} {x.Client.Lastname} ساعت {x.From.ToString("hh:mm")} رزرو داره. سیستم ها: {string.Join(",", x.ReservationStations.Select(x => x.Station.Title))}",
+
+                }).ToList();
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
+            return PartialView("_ToastReservationChecker", model);
         }
     }
 }

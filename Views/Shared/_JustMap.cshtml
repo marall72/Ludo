@@ -2,54 +2,59 @@
 
 @model Ludo.ViewModels.MapEditViewModel
 
-@if (Model.Stations != null)
-{
-    @foreach (var station in Model.Stations)
+<div>
+    آخرین بروزرسانی: <div style="display:inline;" class="ltr">@Model.LastUpdate.ToShortTimeString()</div>
+</div>
+<div class="container mt-4 mapArea">
+    @if (Model.Stations != null)
     {
-        <div data-x="@station.X" data-y="@station.Y" class="resizable @HelperMethods.GetStationClass(station)" stationId="@station.Id" onmouseover="@(Model.IsEdit ? "ShowShadow(this)" : "ShowShadow(this)")" onmouseout="@(Model.IsEdit ? "HideShadow(this)" : "HideShadow(this)")">
-            <strong>@station.Title</strong>
-            @if (station.ReservationStations != null && station.ReservationStations.Any())
-            {
-                <div>
-                    @if(station.ReservationStations.First().Reservation.From >= DateTime.Now)
-                    {
+        @foreach (var station in Model.Stations)
+        {
+            <div data-x="@station.X" data-y="@station.Y" class="resizable @HelperMethods.GetStationClass(station)" stationId="@station.Id" onmouseover="@(Model.IsEdit ? "ShowShadow(this)" : "ShowShadow(this)")" onmouseout="@(Model.IsEdit ? "HideShadow(this)" : "HideShadow(this)")">
+                <strong>@station.Title</strong>
+                @if (station.ReservationStations != null && station.ReservationStations.Any())
+                {
+                    <div>
+                        @if (station.ReservationStations.First().Reservation.From >= DateTime.Now)
+                        {
+                            <small>
+                                از ساعت @station.ReservationStations.First().Reservation.From.ToString("HH:mm") میاد
+                            </small>
+                        }
+                        else
+                        {
+                            <small>
+                                تا ساعت @station.ReservationStations.First().Reservation.To.ToString("HH:mm") پره
+                            </small>
+                        }
+                    </div>
+                }
+                @if (!station.IsActive)
+                {
+                    <div>
                         <small>
-                            از ساعت @station.ReservationStations.First().Reservation.From.ToString("HH:mm") میاد
+                            غیرفعال
                         </small>
-                    }
-                    else
-                    {
+                    </div>
+                }
+
+                @if (station.IsActive && (station.ReservationStations == null || !station.ReservationStations.Any()))
+                {
+                    <div>
                         <small>
-                            تا ساعت @station.ReservationStations.First().Reservation.To.ToString("HH:mm") پره
+                            فعال
                         </small>
-                    }
-                </div>
-            }
-            @if (!station.IsActive)
-            {
-                <div>
-                    <small>
-                        غیرفعال
-                    </small>
-                </div>
-            }
+                    </div>
+                }
 
-            @if (station.IsActive && (station.ReservationStations == null || !station.ReservationStations.Any()))
-            {
-                <div>
-                    <small>
-                        فعال
-                    </small>
-                </div>
-            }
+                @if (!Model.IsEdit && (station.ReservationStations == null || !station.ReservationStations.Any()))
+                {
+                    <div class="resize-shadow">
+                        انتخاب
+                    </div>
+                }
 
-            @if (!Model.IsEdit && (station.ReservationStations == null || !station.ReservationStations.Any()))
-            {
-                <div class="resize-shadow">
-                    انتخاب
-                </div>
-            }
-
-        </div>
+            </div>
+        }
     }
-}
+</div>

@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Ludo.Controllers
 {
     [AdminAuthorization]
-    public class ReportsController : Controller
+    public class ReportsController : BaseController
     {
         private ReservationBusiness reservationBusiness { get; set; }
         private ClientBusiness clientBusiness { get; set; }
-        public ReportsController(LudoDbContext db)
+        public ReportsController(LudoDbContext db) : base(db)
         {
             reservationBusiness = new ReservationBusiness(db);
             clientBusiness = new ClientBusiness(db);
@@ -26,22 +26,49 @@ namespace Ludo.Controllers
 
             var model = new VisitReportListViewModel(from, to);
 
-            model.Items = reservationBusiness.GetReservationReport(from, to, null);
+            try
+            {
+                model.Items = reservationBusiness.GetReservationReport(from, to, null);
 
-            FillCustomers(model);
+                FillCustomers(model);
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 
         [HttpPost]
         public IActionResult VisitReport(VisitReportListViewModel model)
         {
-            var fromDate = HelperMethods.ConvertShamsiToMiladi(model.FromDate, null);
-            var toDate = HelperMethods.ConvertShamsiToMiladi(model.ToDate, null);
+            try
+            {
+                var fromDate = HelperMethods.ConvertShamsiToMiladi(model.FromDate, null);
+                var toDate = HelperMethods.ConvertShamsiToMiladi(model.ToDate, null);
 
-            model.Items = reservationBusiness.GetReservationReport(fromDate, toDate, model.ClientId);
-            model.From = fromDate;
-            model.To = toDate;
-            FillCustomers(model);
+                model.Items = reservationBusiness.GetReservationReport(fromDate, toDate, model.ClientId);
+                model.From = fromDate;
+                model.To = toDate;
+                FillCustomers(model);
+            }
+            catch (Exception ex) {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 

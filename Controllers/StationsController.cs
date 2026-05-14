@@ -9,12 +9,12 @@ using System.Net;
 
 namespace Ludo.Controllers
 {
-    [AdminAuthorization]
-    public class StationsController : Controller
+    [LudoAuthorization]
+    public class StationsController : BaseController
     {
         private StationBusiness stationBusiness { get; set; }
         private GameBusiness gameBusiness { get; set; }
-        public StationsController(LudoDbContext db)
+        public StationsController(LudoDbContext db) : base(db)
         {
             stationBusiness = new StationBusiness(db);
             gameBusiness = new GameBusiness(db);
@@ -29,19 +29,32 @@ namespace Ludo.Controllers
             }
 
             var model = new StationListViewModel();
-            model.Stations = stationBusiness.GetStations(null, page, PagingViewModel.PageSize, out int totalItemCount);
-
-            model.Paging = new PagingViewModel
+            try
             {
-                Action = "index",
-                Controller = "stations",
-                CurrentPage = page,
-                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
-                TotalCount = totalItemCount
-            };
+                model.Stations = stationBusiness.GetStations(null, page, PagingViewModel.PageSize, out int totalItemCount);
 
-            if (page > model.Paging.PageCount)
-                return RedirectToAction("index", new { page = 1 });
+                model.Paging = new PagingViewModel
+                {
+                    Action = "index",
+                    Controller = "stations",
+                    CurrentPage = page,
+                    PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                    TotalCount = totalItemCount
+                };
+
+                if (page > model.Paging.PageCount)
+                    return RedirectToAction("index", new { page = 1 });
+            }
+            catch (Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
 
             return View(model);
         }
@@ -55,26 +68,41 @@ namespace Ludo.Controllers
         [Route("stations/new/{id:int}")]
         public IActionResult New(int id)
         {
-            var station = stationBusiness.GetById(id);
             var model = new EditStation();
-            if (station != null)
-            {
-                model = new EditStation()
-                {
-                    Id = id,
-                    Description = station.Description,
-                    IsActive = station.IsActive,
-                    PlayerCount = station.PlayerCount,
-                    SelectedStationLevel = station.StationLevel,
-                    SelectedStationType = station.StationType,
-                    Title = station.Title
-                };
 
-            }
-            else if (id >= 0)
+            try
             {
-                return Redirect("/stations/new");
+                var station = stationBusiness.GetById(id);
+                if (station != null)
+                {
+                    model = new EditStation()
+                    {
+                        Id = id,
+                        Description = station.Description,
+                        IsActive = station.IsActive,
+                        PlayerCount = station.PlayerCount,
+                        SelectedStationLevel = station.StationLevel,
+                        SelectedStationType = station.StationType,
+                        Title = station.Title
+                    };
+
+                }
+                else if (id >= 0)
+                {
+                    return Redirect("/stations/new");
+                }
             }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 
@@ -82,73 +110,111 @@ namespace Ludo.Controllers
         [Route("stations/new/{id:int?}")]
         public IActionResult New(EditStation model)
         {
-            var user = HttpContext.Items["User"] as User;
-            if (model.Id > 0)
+            try
             {
-                var client = stationBusiness.Update(model, user.Id, out bool duplicateTitle);
-                if (client == null)
+                if (model.Id > 0)
                 {
-                    return Redirect("/stations/new");
-                }
+                    var client = stationBusiness.Update(model, CurrentUser.Id, out bool duplicateTitle);
+                    if (client == null)
+                    {
+                        return Redirect("/stations/new");
+                    }
 
-                if (duplicateTitle)
-                {
-                    ModelState.AddModelError("", "از این عنوان قبلا استفاده شده است.");
-                    return View(model);
+                    if (duplicateTitle)
+                    {
+                        ModelState.AddModelError("", "از این عنوان قبلا استفاده شده است.");
+                        return View(model);
+                    }
+                    else
+                    {
+                        TempData["Result"] = "سیستم با موفقیت بروزرسانی شد.";
+                    }
                 }
                 else
                 {
-                    TempData["Result"] = "سیستم با موفقیت بروزرسانی شد.";
+
+                    model = stationBusiness.Add(model, CurrentUser.Id, out bool duplicateTitle);
+
+                    if (duplicateTitle)
+                    {
+                        ModelState.AddModelError("", "از این عنوان قبلا استفاده شده است.");
+                        return View(model);
+                    }
+                    else
+                    {
+                        TempData["Result"] = "سیستم با موفقیت ایجاد شد.";
+                    }
                 }
+
+                if (ModelState.IsValid)
+                    return RedirectToAction("new", "stations", new { id = model.Id });
             }
-            else
+            catch(Exception ex)
             {
-
-                model = stationBusiness.Add(model, user.Id, out bool duplicateTitle);
-
-                if (duplicateTitle)
+                logBusiness.Add(new Log
                 {
-                    ModelState.AddModelError("", "از این عنوان قبلا استفاده شده است.");
-                    return View(model);
-                }
-                else
-                {
-                    TempData["Result"] = "سیستم با موفقیت ایجاد شد.";
-                }
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
             }
-
-            if (ModelState.IsValid)
-                return RedirectToAction("new", "stations", new { id = model.Id });
-
+            
             return View(model);
         }
 
         public IActionResult Delete(int id)
         {
-            var user = HttpContext.Items["User"] as User;
-            var deleted = stationBusiness.Delete(id, user.Id, out bool isUsed);
-            if (isUsed)
+            try
             {
-                TempData["Error"] = "به علت وجود رزرو امکان حذف این سیستم وجود ندارد.";
-            }
-            if (deleted)
-            {
-                TempData["Result"] = "سیستم با موفقیت حذف شد.";
-            }
+                var deleted = stationBusiness.Delete(id, CurrentUser.Id, out bool isUsed);
+                if (isUsed)
+                {
+                    TempData["Error"] = "به علت وجود رزرو امکان حذف این سیستم وجود ندارد.";
+                }
+                if (deleted)
+                {
+                    TempData["Result"] = "سیستم با موفقیت حذف شد.";
+                }
 
-            if (Request.Headers.Referer[0].EndsWith("/stations") || deleted)
-            {
-                return RedirectToAction("index");
+                if (Request.Headers.Referer[0].EndsWith("/stations") || deleted)
+                {
+                    return RedirectToAction("index");
+                }
             }
-
-            return RedirectToAction("new", "stations", new {id = id});
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
+            return RedirectToAction("new", "stations", new { id = id });
         }
 
         public IActionResult MapEdit()
         {
             var model = new MapEditViewModel();
-            model.Stations = stationBusiness.GetStationsMap(null, DateTime.Now, DateTime.Now.AddHours(1));
-            model.IsEdit = true;
+            try
+            {
+                model.Stations = stationBusiness.GetStationsMap(null, DateTime.Now, DateTime.Now.AddHours(1));
+                model.IsEdit = true;
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 
@@ -156,16 +222,42 @@ namespace Ludo.Controllers
         public IActionResult UpdateMap([FromBody] UpdateMapViewModel model)
         {
             var result = new MapEditViewModel();
-            result.Stations = stationBusiness.GetStationsMap(null, HelperMethods.ConvertShamsiToMiladi(model.DateFrom, model.TimeFrom), HelperMethods.ConvertShamsiToMiladi(model.DateTo, model.TimeTo));
 
+            try
+            {
+                result.Stations = stationBusiness.GetStationsMap(null, HelperMethods.ConvertShamsiToMiladi(model.DateFrom, model.TimeFrom), HelperMethods.ConvertShamsiToMiladi(model.DateTo, model.TimeTo));
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return PartialView("_JustMap", result);
         }
 
         [HttpPost]
         public IActionResult SaveMap([FromBody] List<MapSaveViewModel> model)
         {
-            var user = HttpContext.Items["User"] as User;
-            stationBusiness.SaveMap(model, user.Id);
+            try
+            {
+                stationBusiness.SaveMap(model, CurrentUser.Id);
+            }
+            catch (Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
 
             return Ok();
         }

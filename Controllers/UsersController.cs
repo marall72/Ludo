@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc.Routing;
 namespace Ludo.Controllers
 {
     [AdminAuthorization]
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private UserBusiness userBusiness { get; set; }
 
-        public UsersController(LudoDbContext db)
+        public UsersController(LudoDbContext db) : base(db)
         {
             userBusiness = new UserBusiness(db);
         }
@@ -27,20 +27,34 @@ namespace Ludo.Controllers
             }
 
             var model = new UserListViewModel();
-            model.Users = userBusiness.GetUsers(page, PagingViewModel.PageSize, out int totalItemCount); 
 
-            model.Paging = new PagingViewModel
+            try
             {
-                Action = "index",
-                Controller = "users",
-                CurrentPage = page,
-                PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
-                TotalCount = totalItemCount
-            };
+                model.Users = userBusiness.GetUsers(page, PagingViewModel.PageSize, out int totalItemCount);
 
-            if (page > model.Paging.PageCount)
-                return RedirectToAction("index", new { page = 1 });
+                model.Paging = new PagingViewModel
+                {
+                    Action = "index",
+                    Controller = "users",
+                    CurrentPage = page,
+                    PageCount = (int)Math.Ceiling((double)totalItemCount / PagingViewModel.PageSize),
+                    TotalCount = totalItemCount
+                };
 
+                if (page > model.Paging.PageCount)
+                    return RedirectToAction("index", new { page = 1 });
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return View(model);
         }
 
@@ -53,27 +67,42 @@ namespace Ludo.Controllers
         [Route("users/new/{id:int}")]
         public IActionResult New(int id)
         {
-            var user = userBusiness.GetById(id);
             var model = new EditUser();
-            if (user != null)
+            try
             {
-                model = new EditUser()
+                var user = userBusiness.GetById(id);
+                model = new EditUser();
+                if (user != null)
                 {
-                    Id = id,
-                    Email = user.Email,
-                    Firstname = user.Firstname,
-                    Lastname = user.Lastname,
-                    IsAdmin = user.IsAdmin,
-                    Mobile = user.Mobile,
-                    Password = user.Password,
-                    Username = user.Username,
-                    IsActive = user.IsActive
-                };
+                    model = new EditUser()
+                    {
+                        Id = id,
+                        Email = user.Email,
+                        Firstname = user.Firstname,
+                        Lastname = user.Lastname,
+                        IsAdmin = user.IsAdmin,
+                        Mobile = user.Mobile,
+                        Password = user.Password,
+                        Username = user.Username,
+                        IsActive = user.IsActive
+                    };
+                }
+                else if (id >= 0)
+                {
+                    return Redirect("/users/new");
+                }
             }
-            else if(id >= 0)
+            catch(Exception ex)
             {
-                return Redirect("/users/new");
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
             }
+            
             return View(model);
         }
 
@@ -81,81 +110,106 @@ namespace Ludo.Controllers
         [Route("users/new/{id:int?}")]
         public IActionResult New(EditUser model)
         {
-            var currentUser = HttpContext.Items["User"] as User;
-            if (model.Id > 0)
+            try
             {
-                var user = userBusiness.Update(model, currentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken); 
-                if(user == null)
+                if (model.Id > 0)
                 {
-                    return Redirect("/users/new");
-                }
+                    var user = userBusiness.Update(model, CurrentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken);
+                    if (user == null)
+                    {
+                        return Redirect("/users/new");
+                    }
 
-                if (emailTaken) {
-                    ModelState.AddModelError("", "این ایمیل قبلا استفاده شده است.");
-                }
-                if (usernameTaken)
-                {
-                    ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
-                }
+                    if (emailTaken)
+                    {
+                        ModelState.AddModelError("", "این ایمیل قبلا استفاده شده است.");
+                    }
+                    if (usernameTaken)
+                    {
+                        ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
+                    }
 
-                if (mobileTaken)
+                    if (mobileTaken)
+                    {
+                        ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
+                    }
+
+                    if (ModelState.IsValid)
+                    {
+                        TempData["Result"] = "کاربر با موفقیت بروزرسانی شد.";
+                    }
+                }
+                else
                 {
-                    ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
+                    userBusiness.Add(model, CurrentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken);
+                    TempData["Result"] = "کاربر با موفقیت ایجاد شد.";
+
+                    if (usernameTaken)
+                    {
+                        ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
+                    }
+
+                    if (emailTaken)
+                    {
+                        ModelState.AddModelError("", "این ایمیل قبلا استفاده شده است.");
+                    }
+
+                    if (mobileTaken)
+                    {
+                        ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
+                    }
                 }
 
                 if (ModelState.IsValid)
                 {
-                    TempData["Result"] = "کاربر با موفقیت بروزرسانی شد.";
+                    return RedirectToAction("new", "users", new { id = model.Id });
                 }
             }
-            else
+            catch(Exception ex)
             {
-                userBusiness.Add(model, currentUser.Id, out bool emailTaken, out bool usernameTaken, out bool mobileTaken);
-                TempData["Result"] = "کاربر با موفقیت ایجاد شد.";
-
-                if (usernameTaken)
+                logBusiness.Add(new Log
                 {
-                    ModelState.AddModelError("", "این نام کاربری قبلا استفاده شده است.");
-                }
-
-                if (emailTaken)
-                {
-                    ModelState.AddModelError("", "این ایمیل قبلا استفاده شده است.");
-                }
-
-                if (mobileTaken)
-                {
-                    ModelState.AddModelError("", "این موبایل قبلا استفاده شده است.");
-                }
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
             }
-
-            if (ModelState.IsValid)
-            {
-                return RedirectToAction("new", "users", new { id = model.Id });
-            }
-
+            
             return View(model);
         }
 
         public IActionResult Delete(int id)
         {
-            var currentUser = HttpContext.Items["User"] as User;
-            var deleted = userBusiness.Delete(id, currentUser.Id, out bool isUsed);
-
-            if (isUsed)
+            try
             {
-                TempData["Error"] = "این کاربر در سیستم فعالیت انجام داده و امکان حذف وی وجود ندارد.";
-            }
-            else
-            {
-                TempData["Result"] = "کاربر با موفقیت حذف شد.";
-            }
+                var deleted = userBusiness.Delete(id, CurrentUser.Id, out bool isUsed);
 
-            if (Request.Headers.Referer[0].EndsWith("/users") || deleted)
-            {
-                return RedirectToAction("index");
-            }
+                if (isUsed)
+                {
+                    TempData["Error"] = "این کاربر در سیستم فعالیت انجام داده و امکان حذف وی وجود ندارد.";
+                }
+                else
+                {
+                    TempData["Result"] = "کاربر با موفقیت حذف شد.";
+                }
 
+                if (Request.Headers.Referer[0].EndsWith("/users") || deleted)
+                {
+                    return RedirectToAction("index");
+                }
+            }
+            catch(Exception ex)
+            {
+                logBusiness.Add(new Log
+                {
+                    DateTime = DateTime.Now,
+                    Description = ex.Message,
+                    LogType = LogType.Error,
+                    UserId = CurrentUser.Id
+                });
+            }
+            
             return RedirectToAction("new", "users", new { id = id });
         }
     }

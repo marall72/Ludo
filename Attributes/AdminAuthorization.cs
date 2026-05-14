@@ -9,10 +9,18 @@ namespace Ludo.Attributes
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var user = context.HttpContext.Items["User"] as User;
+            var header = context.HttpContext.Request.Headers["X-Client-Request"];
 
             if (user == null || !user.IsAdmin)
             {
-                context.Result = new RedirectToActionResult("index", "home", null);
+                if (!string.IsNullOrEmpty(header) && header == "fetch")
+                {
+                    context.Result = new StatusCodeResult(StatusCodes.Status401Unauthorized);
+                }
+                else
+                {
+                    context.Result = new RedirectToActionResult("index", "home", null);
+                }
             }
         }
     }

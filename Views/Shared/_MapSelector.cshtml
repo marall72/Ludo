@@ -24,7 +24,7 @@
             <div class="card-body">
                 <div class="form-floating mb-3 row">
                     <div class="col-md-4">
-                        @Html.DropDownListFor(model => model.MapReservation.ClientId, Model.MapReservation.Clients, new { @class = "form-select select2 rtl ", id= "mapReservationClientId"})
+                        @Html.DropDownListFor(model => model.MapReservation.ClientId, Model.MapReservation.Clients, new { @class = "form-select select2 rtl ", id = "mapReservationClientId" })
                         @Html.LabelFor(model => model.MapReservation.ClientId)
                         <span asp-validation-for="MapReservation.ClientId" class="text-danger"></span>
                     </div>
@@ -48,9 +48,9 @@
                         @Html.EditorFor(model => model.MapReservation.Games, "_Games")
                     </div>
                 </div>
+                <button class="btn btn-primary" onclick="SaveReservation()">ذخیره رزرو</button>
             </div>
         </div>
-        <button class="btn btn-primary" onclick="SaveReservation()">ذخیره رزرو</button>
 
 
         <div class="card">
@@ -68,10 +68,10 @@
                     </div>
                     <div class="col-md-3">
                         <input class="form-control persianDatePicker" id="mapDateTo" value="@HelperMethods.ConvertMiladiToShamsi(DateTime.Now.AddHours(1), false)" />
-                        <label for="mapDateTo">تاریخ از</label>
+                        <label for="mapDateTo">تاریخ تا</label>
                     </div>
                     <div class="col-md-3">
-                        <input class="form-control" id="mapTimeTo" type="time" value="@DateTime.Now.AddHours(1).ToString("HH:mm")"  />
+                        <input class="form-control" id="mapTimeTo" type="time" value="@DateTime.Now.AddHours(1).ToString("HH:mm")" />
                     </div>
                 </div>
                 <button class="btn btn-primary" onclick="UpdateMap()">بررسی رزرو نقشه</button>
@@ -79,12 +79,10 @@
         </div>
     }
 </div>
-
-<div class="container mt-4 mapArea">
-
+<div id="mapAreaWrapper">
     @Html.Partial("_JustMap", Model)
-
 </div>
+
 
 
 <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -99,9 +97,7 @@
             نقشه با موفقیت بروزرسانی شد.
         </div>
     </div>
-</div>
 
-<div class="toast-container position-fixed top-0 end-0 p-3">
     <div class="toast bg-danger text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="mapErrorToast">
         <div class="toast-header">
             <div>

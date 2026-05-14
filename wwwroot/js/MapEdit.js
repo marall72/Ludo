@@ -32,7 +32,7 @@ function SetStationsPosition() {
 
 function UpdateMap() {
     var url = "/stations/updatemap";
-    var contentDiv = $(".mapArea");
+    var contentDiv = $("#mapAreaWrapper");
 
     var dateFrom = $("#mapDateFrom").val();
     var timeFrom = $("#mapTimeFrom").val();
@@ -47,10 +47,16 @@ function UpdateMap() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-Client-Request': 'fetch'
         }, body: JSON.stringify(searchConditions)
     })
         .then(response => {
-            return response.text();
+            if (response.status == 401) {
+                window.location = "/home";
+            }
+            else if (response.ok) {
+                return response.text();
+            }
         })
         .then(html => {
             $(contentDiv).html("");
@@ -73,20 +79,26 @@ function SaveMapCoordinates() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-Client-Request': 'fetch'
         },
         body: JSON.stringify(stationCoordinates)
     })
         .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-                });
-
+            if (response.status == 401) {
+                window.location = "/home";
             }
             else {
-                var toast = new bootstrap.Toast($("#mapUpdateToast"));
-                toast.show();
-            }
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                    });
+
+                }
+                else {
+                    var toast = new bootstrap.Toast($("#mapUpdateToast"));
+                    toast.show();
+                }
+            }            
         });
 }
 
@@ -171,11 +183,21 @@ function SaveReservation() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-Client-Request': 'fetch'
         },
         body: JSON.stringify(reservation)
     })
         .then(response => {
-            if (!response.ok) {
+            if (response.status == 401) {
+                window.location = "/home";
+            }
+            else if (response.status == 409) {
+                $("#mapErrorToast .toast-body").html("رزرو دیگری برای این سیستم ثبت شده است. لطفا صفحه را بروزرسانی کنید.");
+                var toast = new bootstrap.Toast($("#mapErrorToast"));
+                toast.show();
+
+            }
+            else if (!response.ok) {
                 return response.text().then(text => {
                     throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
                 });
@@ -185,6 +207,7 @@ function SaveReservation() {
                 $("#mapUpdateToast .toast-body").html("رزرو با موفقیت ثبت شد.");
                 var toast = new bootstrap.Toast($("#mapUpdateToast"));
                 toast.show();
+                UpdateMap();
             }
         });
 }

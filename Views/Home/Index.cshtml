@@ -44,24 +44,24 @@
 @if (user != null)
 {
     <div class="container py-4">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-tabs" id="mainPageReservationsTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab">
+                <button class="nav-link active" id="map-tab" data-bs-toggle="tab" data-bs-target="#mapTab" type="button" role="tab">
                     رزرو از نقشه
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+                <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#listTab" type="button" role="tab">
                     رزرو فرمی
                 </button>
             </li>
         </ul>
 
-        <div class="tab-content border border-top-0 p-3" id="myTabContent">
-            <div class="tab-pane fade show active" id="home" role="tabpanel">
+        <div class="tab-content border border-top-0 p-3" id="reservationTabContent">
+            <div class="tab-pane fade show active" id="mapTab" role="tabpanel">
                 @Html.Partial("_MapSelector", Model.MapEdit)
             </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel">
+            <div class="tab-pane fade" id="listTab" role="tabpanel">
                 @Html.Partial("_Reservations", Model.Reservations)
             </div>
         </div>
@@ -75,11 +75,13 @@
 
     <script>
         var registerDraggable = false;
+        var isInMainPage = true;
         function confirmDelete(userId) {
             if (confirm('آیا از حذف این رزرو مطمئن هستید؟')) {
 
                 window.location.href = '@Url.Action("delete", "reservations")?id=' + userId;
             }
         }
+
     </script>
 }

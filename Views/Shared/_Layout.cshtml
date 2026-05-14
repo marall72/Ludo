@@ -132,6 +132,7 @@
     @await RenderSectionAsync("Scripts", required: false)
     <script>
 
+        var logined = @(user == null ? "false" : "true");
     </script>
 </body>
 </html>
